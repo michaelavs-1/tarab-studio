@@ -2771,13 +2771,25 @@ function mtInit() {
   mtLoadSong(MT_SONG);
 }
 
+// ── Decode ArrayBuffer → AudioBuffer (Safari-safe, no user gesture needed) ──
+function mtDecodeBuffer(ab) {
+  return new Promise((resolve,reject)=>{
+    try {
+      const tmp=new (window.AudioContext||window.webkitAudioContext)({sampleRate:44100});
+      const done=buf=>{ try{tmp.close();}catch(e){} resolve(buf); };
+      const fail=err=>{ try{tmp.close();}catch(e){} reject(err); };
+      const p=tmp.decodeAudioData(ab,done,fail);
+      if(p&&p.then) p.then(done).catch(fail);
+    } catch(e){ reject(e); }
+  });
+}
+
 // ── Load from server path ──
 async function mtLoadSong(song) {
   document.getElementById('mtSongName').textContent=song.name;
   mtStop();
-  mtChannels.forEach(ch=>{try{ch.gain.disconnect();}catch(e){}});
+  mtChannels.forEach(ch=>{ try{ch.audio&&ch.audio.pause();}catch(e){} try{ch.gain&&ch.gain.disconnect();}catch(e){} });
   mtChannels=[];
-  const ctx=mtGetCtx();
   document.getElementById('mtLoadingState').style.display='flex';
   document.getElementById('mtTrackList').style.display='none';
   for(let i=0;i<song.channels.length;i++){
@@ -2786,11 +2798,11 @@ async function mtLoadSong(song) {
     try {
       const resp=await fetch(song.path+ch.file); if(!resp.ok) throw new Error('HTTP '+resp.status);
       const ab=await resp.arrayBuffer();
-      const buf=await ctx.decodeAudioData(ab);
-      const gain=ctx.createGain(); gain.gain.value=1;
-      const analyser=ctx.createAnalyser(); analyser.fftSize=256; analyser.smoothingTimeConstant=0.85;
-      gain.connect(analyser); analyser.connect(ctx.destination);
-      mtChannels.push({name:ch.label, buf, gain, analyser, src:null, volume:1, isVocal:false, vuPeak:0, vuPeakTimer:0});
+      const buf=await mtDecodeBuffer(ab.slice(0));
+      const blob=new Blob([ab],{type:'audio/mpeg'});
+      const blobUrl=URL.createObjectURL(blob);
+      const audio=new Audio(blobUrl); audio.preload='auto';
+      mtChannels.push({name:ch.label, buf, audio, blobUrl, gain:null, analyser:null, mediaSrc:null, volume:1, isVocal:false, vuPeak:0, vuPeakTimer:0});
     } catch(err){ console.warn(ch.label,err); }
   }
   mtFinishLoad(song.name);
@@ -2799,9 +2811,8 @@ async function mtLoadSong(song) {
 // ── Load from file input ──
 async function mtLoadFiles(files) {
   mtStop();
-  mtChannels.forEach(ch=>{try{ch.gain.disconnect();}catch(e){}});
+  mtChannels.forEach(ch=>{ try{ch.audio&&ch.audio.pause();}catch(e){} try{ch.gain&&ch.gain.disconnect();}catch(e){} });
   mtChannels=[];
-  const ctx=mtGetCtx();
   const arr=Array.from(files).filter(f=>f.type.startsWith('audio/')||/\.(mp3|wav|m4a|aac|ogg|flac)$/i.test(f.name));
   arr.sort((a,b)=>a.name.localeCompare(b.name));
   document.getElementById('mtLoadingState').style.display='flex';
@@ -2811,15 +2822,28 @@ async function mtLoadFiles(files) {
     document.getElementById('mtLoadTxt').textContent=`Loading ${i+1}/${arr.length}: ${file.name}`;
     try {
       const ab=await file.arrayBuffer();
-      const buf=await ctx.decodeAudioData(ab.slice(0));
-      const gain=ctx.createGain(); gain.gain.value=1;
-      const analyser=ctx.createAnalyser(); analyser.fftSize=256; analyser.smoothingTimeConstant=0.85;
-      gain.connect(analyser); analyser.connect(ctx.destination);
-      mtChannels.push({name:file.name.replace(/\.[^/.]+$/,''), buf, gain, analyser, src:null, volume:1, isVocal:false, vuPeak:0, vuPeakTimer:0});
+      const buf=await mtDecodeBuffer(ab.slice(0));
+      const blobUrl=URL.createObjectURL(file);
+      const audio=new Audio(blobUrl); audio.preload='auto';
+      mtChannels.push({name:file.name.replace(/\.[^/.]+$/,''), buf, audio, blobUrl, gain:null, analyser:null, mediaSrc:null, volume:1, isVocal:false, vuPeak:0, vuPeakTimer:0});
     } catch(err){ console.warn(file.name,err); }
   }
-  // Update song name from first file's parent folder (best effort)
   mtFinishLoad(arr.length+' Stems');
+}
+
+// ── Connect HTMLAudioElements to Web Audio graph (call inside user gesture) ──
+function mtConnectGraph() {
+  if(!mtCtx) mtCtx=new (window.AudioContext||window.webkitAudioContext)();
+  mtChannels.forEach(ch=>{
+    if(!ch.mediaSrc && ch.audio) {
+      ch.gain=mtCtx.createGain(); ch.gain.gain.value=ch.volume;
+      ch.analyser=mtCtx.createAnalyser(); ch.analyser.fftSize=256; ch.analyser.smoothingTimeConstant=0.85;
+      ch.mediaSrc=mtCtx.createMediaElementSource(ch.audio);
+      ch.mediaSrc.connect(ch.gain); ch.gain.connect(ch.analyser); ch.analyser.connect(mtCtx.destination);
+    } else if(ch.gain) {
+      ch.gain.gain.value=ch.volume;
+    }
+  });
 }
 
 function mtFinishLoad(label) {
@@ -2876,7 +2900,7 @@ function mtRenderMixer() {
       <span class="mt-ch-val" id="mtVal_${i}">100%</span>`;
     strip.querySelector('.mt-vfader').addEventListener('input',e=>{
       ch.volume=+e.target.value;
-      ch.gain.gain.value=ch.volume;
+      if(ch.gain) ch.gain.gain.value=ch.volume;
       document.getElementById(`mtVal_${i}`).textContent=Math.round(ch.volume*100)+'%';
       mtUpdateCap(i);
     });
@@ -2952,19 +2976,12 @@ function mtDrawWave(i) {
 // ── Playback ──
 async function mtPlay() {
   if(!mtChannels.length) return;
-  const ctx=mtGetCtx();
-  if(ctx.state!=='running'){try{await ctx.resume();}catch(e){}}
-  mtChannels.forEach(ch=>{if(ch.src){try{ch.src.stop();}catch(e){} ch.src=null;}});
-  const startAt=ctx.currentTime+0.04;
-  mtChannels.forEach(ch=>{
-    ch.gain.gain.value=ch.volume;
-    ch.src=ctx.createBufferSource();
-    ch.src.buffer=ch.buf;
-    ch.src.connect(ch.gain);
-    const off=Math.max(0,Math.min(mtOffset,ch.buf.duration));
-    ch.src.start(startAt,off);
-  });
-  mtStartTime=startAt; mtPlaying=true;
+  mtConnectGraph();
+  if(mtCtx.state!=='running') try{mtCtx.resume();}catch(e){}
+  const t=Math.max(0,mtOffset);
+  mtChannels.forEach(ch=>{ ch.audio.currentTime=t; });
+  try{ await Promise.all(mtChannels.map(ch=>ch.audio.play())); }catch(e){}
+  mtPlaying=true;
   document.getElementById('mtIconPlay').style.display='none';
   document.getElementById('mtIconPause').style.display='';
   document.getElementById('mtBtnPlay').classList.add('active');
@@ -2973,7 +2990,7 @@ async function mtPlay() {
 
 function mtPause() {
   mtOffset=mtNow();
-  mtChannels.forEach(ch=>{if(ch.src){try{ch.src.stop();}catch(e){} ch.src=null;}});
+  mtChannels.forEach(ch=>{ try{ch.audio.pause();}catch(e){} });
   mtPlaying=false; cancelAnimationFrame(mtAnimFrame);
   document.getElementById('mtIconPlay').style.display='';
   document.getElementById('mtIconPause').style.display='none';
@@ -2981,10 +2998,16 @@ function mtPause() {
 }
 
 function mtStop() {
-  mtOffset=0; mtPause(); mtUpdateTimeline(0);
+  mtPause(); mtOffset=0;
+  mtChannels.forEach(ch=>{ try{ch.audio.currentTime=0;}catch(e){} });
+  mtUpdateTimeline(0);
 }
 
-function mtNow(){ return mtPlaying&&mtCtx ? Math.min(mtOffset+(mtCtx.currentTime-mtStartTime),mtDuration) : mtOffset; }
+function mtNow(){
+  if(!mtPlaying) return mtOffset;
+  if(mtChannels.length && mtChannels[0].audio) return Math.min(mtChannels[0].audio.currentTime, mtDuration);
+  return mtOffset;
+}
 
 function mtAnimate() {
   cancelAnimationFrame(mtAnimFrame);
@@ -3011,8 +3034,9 @@ function mtUpdateTimeline(t) {
 }
 
 function mtSeek(t) {
-  const was=mtPlaying; mtPause();
+  const was=mtPlaying; if(was) mtPause();
   mtOffset=Math.max(0,Math.min(t,mtDuration));
+  mtChannels.forEach(ch=>{ try{ch.audio.currentTime=mtOffset;}catch(e){} });
   mtUpdateTimeline(mtOffset);
   if(was) mtPlay();
 }
@@ -3084,12 +3108,13 @@ async function mtOnRecordStop() {
   const blob=new Blob(mtRecChunks,{type:'audio/webm'});
   try {
     const ab=await blob.arrayBuffer();
-    const buf=await mtGetCtx().decodeAudioData(ab);
-    const gain=mtGetCtx().createGain(); gain.gain.value=1; gain.connect(mtGetCtx().destination);
+    const buf=await mtDecodeBuffer(ab.slice(0));
+    const blobUrl=URL.createObjectURL(blob);
+    const audio=new Audio(blobUrl); audio.preload='auto';
     // Remove previous vocal take if exists
     const prevIdx=mtChannels.findIndex(c=>c.isVocal);
-    if(prevIdx>=0){ try{mtChannels[prevIdx].gain.disconnect();}catch(e){} mtChannels.splice(prevIdx,1); }
-    mtChannels.push({name:'Vocal', buf, gain, src:null, volume:1, isVocal:true});
+    if(prevIdx>=0){ try{mtChannels[prevIdx].audio.pause(); URL.revokeObjectURL(mtChannels[prevIdx].blobUrl);}catch(e){} mtChannels.splice(prevIdx,1); }
+    mtChannels.push({name:'Vocal', buf, audio, blobUrl, gain:null, analyser:null, mediaSrc:null, volume:1, isVocal:true, vuPeak:0, vuPeakTimer:0});
     if(buf.duration>mtDuration) mtDuration=buf.duration;
     mtRenderTracks();
     mtRenderMixer();
