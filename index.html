@@ -1053,6 +1053,12 @@ footer span { color: var(--gold); }
 .mt-ch.vocal-ch .mt-ch-lbl { color:var(--accent); }
 .mt-fader-rail-wrap { flex:1; display:flex; flex-direction:column; align-items:center; justify-content:center; width:100%; position:relative; min-height:0; }
 .mt-fader-rail { position:absolute; top:8px; bottom:8px; left:50%; transform:translateX(-50%); width:4px; background:linear-gradient(180deg,#1e1810 0%,#141008 100%); border-radius:2px; pointer-events:none; border:1px solid rgba(30,24,8,0.95); }
+.mt-ms-row { display:flex; gap:3px; margin-bottom:3px; }
+.mt-ms-btn { flex:1; height:16px; font-size:0.38rem; font-weight:800; letter-spacing:0.08em; border:1px solid rgba(60,46,18,0.7); border-radius:2px; cursor:pointer; transition:all 0.15s; }
+.mt-mute { background:#1a1208; color:rgba(180,140,60,0.5); }
+.mt-mute.active { background:#c0392b; color:#fff; border-color:#e74c3c; box-shadow:0 0 6px rgba(231,76,60,0.5); }
+.mt-solo { background:#1a1208; color:rgba(180,140,60,0.5); }
+.mt-solo.active { background:#d4a017; color:#000; border-color:#f0c040; box-shadow:0 0 6px rgba(240,192,64,0.6); }
 .mt-fader-ticks { position:absolute; right:calc(50% + 5px); top:8px; bottom:8px; display:flex; flex-direction:column; justify-content:space-between; pointer-events:none; }
 .mt-fader-ticks span { width:4px; height:1px; background:rgba(70,56,22,0.5); display:block; }
 .mt-vu { position:absolute; left:3px; top:8px; bottom:8px; width:8px; height:auto; pointer-events:none; border-radius:2px; }
@@ -2788,7 +2794,7 @@ function mtDecodeBuffer(ab) {
 async function mtLoadSong(song) {
   document.getElementById('mtSongName').textContent=song.name;
   mtStop();
-  mtChannels.forEach(ch=>{ try{ch.audio&&ch.audio.pause();}catch(e){} try{ch.gain&&ch.gain.disconnect();}catch(e){} });
+  mtChannels.forEach(ch=>{ try{ch.gain&&ch.gain.disconnect();}catch(e){} });
   mtChannels=[];
   document.getElementById('mtLoadingState').style.display='flex';
   document.getElementById('mtTrackList').style.display='none';
@@ -2799,10 +2805,7 @@ async function mtLoadSong(song) {
       const resp=await fetch(song.path+ch.file); if(!resp.ok) throw new Error('HTTP '+resp.status);
       const ab=await resp.arrayBuffer();
       const buf=await mtDecodeBuffer(ab.slice(0));
-      const blob=new Blob([ab],{type:'audio/mpeg'});
-      const blobUrl=URL.createObjectURL(blob);
-      const audio=new Audio(blobUrl); audio.preload='auto';
-      mtChannels.push({name:ch.label, buf, audio, blobUrl, gain:null, analyser:null, mediaSrc:null, volume:1, isVocal:false, vuPeak:0, vuPeakTimer:0});
+      mtChannels.push({name:ch.label, buf, gain:null, analyser:null, src:null, volume:1, muted:false, solo:false, isVocal:false, vuPeak:0, vuPeakTimer:0});
     } catch(err){ console.warn(ch.label,err); }
   }
   mtFinishLoad(song.name);
@@ -2811,7 +2814,7 @@ async function mtLoadSong(song) {
 // ── Load from file input ──
 async function mtLoadFiles(files) {
   mtStop();
-  mtChannels.forEach(ch=>{ try{ch.audio&&ch.audio.pause();}catch(e){} try{ch.gain&&ch.gain.disconnect();}catch(e){} });
+  mtChannels.forEach(ch=>{ try{ch.gain&&ch.gain.disconnect();}catch(e){} });
   mtChannels=[];
   const arr=Array.from(files).filter(f=>f.type.startsWith('audio/')||/\.(mp3|wav|m4a|aac|ogg|flac)$/i.test(f.name));
   arr.sort((a,b)=>a.name.localeCompare(b.name));
@@ -2823,26 +2826,31 @@ async function mtLoadFiles(files) {
     try {
       const ab=await file.arrayBuffer();
       const buf=await mtDecodeBuffer(ab.slice(0));
-      const blobUrl=URL.createObjectURL(file);
-      const audio=new Audio(blobUrl); audio.preload='auto';
-      mtChannels.push({name:file.name.replace(/\.[^/.]+$/,''), buf, audio, blobUrl, gain:null, analyser:null, mediaSrc:null, volume:1, isVocal:false, vuPeak:0, vuPeakTimer:0});
+      mtChannels.push({name:file.name.replace(/\.[^/.]+$/,''), buf, gain:null, analyser:null, src:null, volume:1, muted:false, solo:false, isVocal:false, vuPeak:0, vuPeakTimer:0});
     } catch(err){ console.warn(file.name,err); }
   }
   mtFinishLoad(arr.length+' Stems');
 }
 
-// ── Connect HTMLAudioElements to Web Audio graph (call inside user gesture) ──
-function mtConnectGraph() {
+// ── Create playback context + gain/analyser nodes (always inside user gesture) ──
+function mtEnsureGraph() {
   if(!mtCtx) mtCtx=new (window.AudioContext||window.webkitAudioContext)();
   mtChannels.forEach(ch=>{
-    if(!ch.mediaSrc && ch.audio) {
+    if(!ch.gain){
       ch.gain=mtCtx.createGain(); ch.gain.gain.value=ch.volume;
       ch.analyser=mtCtx.createAnalyser(); ch.analyser.fftSize=256; ch.analyser.smoothingTimeConstant=0.85;
-      ch.mediaSrc=mtCtx.createMediaElementSource(ch.audio);
-      ch.mediaSrc.connect(ch.gain); ch.gain.connect(ch.analyser); ch.analyser.connect(mtCtx.destination);
-    } else if(ch.gain) {
-      ch.gain.gain.value=ch.volume;
+      ch.gain.connect(ch.analyser); ch.analyser.connect(mtCtx.destination);
     }
+  });
+}
+
+// ── Apply mute/solo logic to all gain nodes ──
+function mtApplyGains() {
+  const hasSolo=mtChannels.some(c=>c.solo);
+  mtChannels.forEach(ch=>{
+    if(!ch.gain) return;
+    const active=!ch.muted && (!hasSolo||ch.solo);
+    ch.gain.gain.value=active?ch.volume:0;
   });
 }
 
@@ -2890,6 +2898,10 @@ function mtRenderMixer() {
     strip.className='mt-ch'+(ch.isVocal?' vocal-ch':'');
     strip.innerHTML=`
       <span class="mt-ch-lbl" title="${ch.name}">${ch.name}</span>
+      <div class="mt-ms-row">
+        <button class="mt-ms-btn mt-mute" id="mtMute_${i}" title="Mute">M</button>
+        <button class="mt-ms-btn mt-solo" id="mtSolo_${i}" title="Solo">S</button>
+      </div>
       <div class="mt-fader-rail-wrap">
         <div class="mt-fader-rail"></div>
         <div class="mt-fader-ticks"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
@@ -2900,9 +2912,18 @@ function mtRenderMixer() {
       <span class="mt-ch-val" id="mtVal_${i}">100%</span>`;
     strip.querySelector('.mt-vfader').addEventListener('input',e=>{
       ch.volume=+e.target.value;
-      if(ch.gain) ch.gain.gain.value=ch.volume;
       document.getElementById(`mtVal_${i}`).textContent=Math.round(ch.volume*100)+'%';
-      mtUpdateCap(i);
+      mtUpdateCap(i); mtApplyGains();
+    });
+    strip.querySelector('.mt-mute').addEventListener('click',()=>{
+      ch.muted=!ch.muted;
+      document.getElementById(`mtMute_${i}`).classList.toggle('active',ch.muted);
+      mtApplyGains();
+    });
+    strip.querySelector('.mt-solo').addEventListener('click',()=>{
+      ch.solo=!ch.solo;
+      document.getElementById(`mtSolo_${i}`).classList.toggle('active',ch.solo);
+      mtApplyGains();
     });
     mixer.appendChild(strip);
   });
@@ -2976,12 +2997,19 @@ function mtDrawWave(i) {
 // ── Playback ──
 async function mtPlay() {
   if(!mtChannels.length) return;
-  mtConnectGraph();
-  if(mtCtx.state!=='running') try{mtCtx.resume();}catch(e){}
-  const t=Math.max(0,mtOffset);
-  mtChannels.forEach(ch=>{ ch.audio.currentTime=t; });
-  try{ await Promise.all(mtChannels.map(ch=>ch.audio.play())); }catch(e){}
-  mtPlaying=true;
+  mtEnsureGraph();
+  if(mtCtx.state!=='running') try{await mtCtx.resume();}catch(e){}
+  mtChannels.forEach(ch=>{if(ch.src){try{ch.src.stop();}catch(e){} ch.src=null;}});
+  const startAt=mtCtx.currentTime+0.04;
+  mtApplyGains();
+  mtChannels.forEach(ch=>{
+    ch.src=mtCtx.createBufferSource();
+    ch.src.buffer=ch.buf;
+    ch.src.connect(ch.gain);
+    const off=Math.max(0,Math.min(mtOffset,ch.buf.duration));
+    ch.src.start(startAt,off);
+  });
+  mtStartTime=startAt; mtPlaying=true;
   document.getElementById('mtIconPlay').style.display='none';
   document.getElementById('mtIconPause').style.display='';
   document.getElementById('mtBtnPlay').classList.add('active');
@@ -2990,7 +3018,7 @@ async function mtPlay() {
 
 function mtPause() {
   mtOffset=mtNow();
-  mtChannels.forEach(ch=>{ try{ch.audio.pause();}catch(e){} });
+  mtChannels.forEach(ch=>{if(ch.src){try{ch.src.stop();}catch(e){} ch.src=null;}});
   mtPlaying=false; cancelAnimationFrame(mtAnimFrame);
   document.getElementById('mtIconPlay').style.display='';
   document.getElementById('mtIconPause').style.display='none';
@@ -2998,16 +3026,10 @@ function mtPause() {
 }
 
 function mtStop() {
-  mtPause(); mtOffset=0;
-  mtChannels.forEach(ch=>{ try{ch.audio.currentTime=0;}catch(e){} });
-  mtUpdateTimeline(0);
+  mtOffset=0; mtPause(); mtUpdateTimeline(0);
 }
 
-function mtNow(){
-  if(!mtPlaying) return mtOffset;
-  if(mtChannels.length && mtChannels[0].audio) return Math.min(mtChannels[0].audio.currentTime, mtDuration);
-  return mtOffset;
-}
+function mtNow(){ return mtPlaying&&mtCtx ? Math.min(mtOffset+(mtCtx.currentTime-mtStartTime),mtDuration) : mtOffset; }
 
 function mtAnimate() {
   cancelAnimationFrame(mtAnimFrame);
@@ -3034,9 +3056,8 @@ function mtUpdateTimeline(t) {
 }
 
 function mtSeek(t) {
-  const was=mtPlaying; if(was) mtPause();
+  const was=mtPlaying; mtPause();
   mtOffset=Math.max(0,Math.min(t,mtDuration));
-  mtChannels.forEach(ch=>{ try{ch.audio.currentTime=mtOffset;}catch(e){} });
   mtUpdateTimeline(mtOffset);
   if(was) mtPlay();
 }
@@ -3109,12 +3130,10 @@ async function mtOnRecordStop() {
   try {
     const ab=await blob.arrayBuffer();
     const buf=await mtDecodeBuffer(ab.slice(0));
-    const blobUrl=URL.createObjectURL(blob);
-    const audio=new Audio(blobUrl); audio.preload='auto';
     // Remove previous vocal take if exists
     const prevIdx=mtChannels.findIndex(c=>c.isVocal);
-    if(prevIdx>=0){ try{mtChannels[prevIdx].audio.pause(); URL.revokeObjectURL(mtChannels[prevIdx].blobUrl);}catch(e){} mtChannels.splice(prevIdx,1); }
-    mtChannels.push({name:'Vocal', buf, audio, blobUrl, gain:null, analyser:null, mediaSrc:null, volume:1, isVocal:true, vuPeak:0, vuPeakTimer:0});
+    if(prevIdx>=0){ try{mtChannels[prevIdx].gain&&mtChannels[prevIdx].gain.disconnect();}catch(e){} mtChannels.splice(prevIdx,1); }
+    mtChannels.push({name:'Vocal', buf, gain:null, analyser:null, src:null, volume:1, muted:false, solo:false, isVocal:true, vuPeak:0, vuPeakTimer:0});
     if(buf.duration>mtDuration) mtDuration=buf.duration;
     mtRenderTracks();
     mtRenderMixer();
