@@ -1373,6 +1373,10 @@ footer span { color: var(--gold); }
   <a href="#" onclick="closeMobileNav(); navScroll('mission'); return false;">About</a>
   <a href="#" onclick="closeMobileNav(); navScroll('process'); return false;">How It Works</a>
   <a href="#" onclick="closeMobileNav(); navScroll('contact'); return false;">Contact</a>
+  <a href="#" class="nav-beats-btn" onclick="closeMobileNav(); showBeats(); return false;">
+    <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z"/></svg>
+    Beats
+  </a>
   <a href="#" class="nav-mixer-btn" onclick="closeMobileNav(); showMixer(); return false;">
     <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="2" width="2" height="12" rx="1"/><rect x="7" y="5" width="2" height="9" rx="1"/><rect x="12" y="1" width="2" height="13" rx="1"/></svg>
     Mix it!
@@ -3629,6 +3633,10 @@ function cardPlayBeat(btn, producerId) {
   <a href="#" onclick="navScroll('process');return false;" class="mbn-item">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
     <span>Process</span>
+  </a>
+  <a href="#" onclick="showBeats();return false;" class="mbn-item">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z"/></svg>
+    <span>Beats</span>
   </a>
   <a href="#" onclick="navScroll('contact');return false;" class="mbn-item">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
