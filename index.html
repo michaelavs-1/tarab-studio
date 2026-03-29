@@ -1098,17 +1098,23 @@ footer span { color: var(--gold); }
 .mt-track-cv { flex:1; display:block; height:52px; min-width:0; background:#0e0b06; cursor:pointer; }
 
 /* ── Transport ── */
-.mt-transport { flex-shrink:0; height:40px; display:flex; align-items:center; gap:0.65rem; padding:0 1rem; background:#0d0a05; border-top:1px solid rgba(35,26,10,0.9); border-bottom:1px solid rgba(35,26,10,0.9); }
-.mt-tbtn { width:28px; height:28px; border-radius:50%; border:1px solid var(--border); background:rgba(15,11,4,0.9); color:var(--gold); display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; transition:all 0.15s; }
-.mt-tbtn:hover { border-color:var(--gold); background:rgba(201,162,74,0.08); }
-.mt-tbtn.play-btn { width:32px; height:32px; }
-.mt-tbtn.active { background:var(--gold); color:#0a0804; border-color:var(--gold); }
-.mt-time { font-size:0.64rem; font-weight:700; color:var(--gold-bright); font-variant-numeric:tabular-nums; letter-spacing:0.06em; min-width:36px; flex-shrink:0; }
-.mt-dur { color:var(--text-dim); }
-.mt-tl-wrap { flex:1; height:18px; position:relative; cursor:pointer; min-width:0; }
-.mt-tl-track { position:absolute; top:50%; left:0; right:0; height:3px; transform:translateY(-50%); background:rgba(30,22,8,0.9); border-radius:2px; }
-.mt-tl-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--gold-bright)); border-radius:2px; width:0%; transition:width 0.05s linear; }
-.mt-tl-head { position:absolute; top:50%; left:0%; transform:translate(-50%,-50%); width:11px; height:11px; border-radius:50%; background:var(--gold-bright); border:2px solid #0a0804; box-shadow:0 0 7px rgba(232,191,98,0.6); }
+.mt-transport { flex-shrink:0; height:64px; display:flex; align-items:center; gap:0.5rem; padding:0 1.2rem; background:#0a0804; border-top:1px solid #1a1208; border-bottom:1px solid #1a1208; }
+.mt-tbtn { width:38px; height:38px; border-radius:50%; border:none; display:flex; align-items:center; justify-content:center; cursor:pointer; flex-shrink:0; transition:all 0.15s; background:#1e1a12; color:#a08840; }
+.mt-tbtn:hover { filter:brightness(1.25); transform:scale(1.06); }
+.mt-tbtn.btn-stop { background:#2a1212; color:#e05050; }
+.mt-tbtn.btn-stop:hover { background:#3a1818; color:#ff6060; }
+.mt-tbtn.btn-skip { background:#141210; color:#888; }
+.mt-tbtn.btn-skip:hover { color:#ccc; }
+.mt-tbtn.play-btn { width:52px; height:52px; background:linear-gradient(145deg,#1db954,#158a3e); color:#fff; box-shadow:0 0 18px rgba(29,185,84,0.4); }
+.mt-tbtn.play-btn:hover { box-shadow:0 0 26px rgba(29,185,84,0.6); }
+.mt-tbtn.play-btn.is-playing { background:linear-gradient(145deg,#f5a623,#c07e10); box-shadow:0 0 18px rgba(245,166,35,0.4); }
+.mt-tbtn.play-btn.is-playing:hover { box-shadow:0 0 26px rgba(245,166,35,0.6); }
+.mt-time { font-size:0.75rem; font-weight:700; color:#e8bf62; font-variant-numeric:tabular-nums; letter-spacing:0.08em; min-width:40px; flex-shrink:0; }
+.mt-dur { color:#4a3e28; }
+.mt-tl-wrap { flex:1; height:28px; position:relative; cursor:pointer; min-width:0; display:flex; align-items:center; }
+.mt-tl-track { position:absolute; left:0; right:0; height:5px; background:#1c1508; border-radius:3px; }
+.mt-tl-fill { height:100%; background:linear-gradient(90deg,#1db954,#e8bf62); border-radius:3px; width:0%; transition:width 0.05s linear; }
+.mt-tl-head { position:absolute; top:50%; left:0%; transform:translate(-50%,-50%); width:14px; height:14px; border-radius:50%; background:#fff; border:2px solid #1db954; box-shadow:0 0 8px rgba(29,185,84,0.7); }
 
 /* ══════════════════════════════════════════
    HARDWARE CONSOLE MIXER
@@ -1648,13 +1654,32 @@ footer span { color: var(--gold); }
 
     <!-- Transport bar -->
     <div class="mt-transport">
-      <button class="mt-tbtn" id="mtBtnRewind" title="Rewind">
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M2 3v10M14 3L7 8l7 5z"/></svg>
+      <!-- Rewind to start -->
+      <button class="mt-tbtn btn-skip" id="mtBtnRewind" title="Rewind to Start">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6l8.5 6V6z"/></svg>
       </button>
-      <button class="mt-tbtn play-btn" id="mtBtnPlay">
-        <svg id="mtIconPlay"  width="12" height="12" viewBox="0 0 16 16" fill="currentColor"><path d="M4 3l10 5-10 5z"/></svg>
-        <svg id="mtIconPause" width="12" height="12" viewBox="0 0 16 16" fill="currentColor" style="display:none"><rect x="3" y="2" width="4" height="12"/><rect x="9" y="2" width="4" height="12"/></svg>
+      <!-- Skip back 10s -->
+      <button class="mt-tbtn btn-skip" id="mtBtnSkipBack" title="Skip Back 10s">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M11.99 5V1l-5 5 5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6h-2c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8z"/><text x="7.5" y="15.5" font-size="5" font-weight="bold" fill="currentColor" text-anchor="middle">10</text></svg>
       </button>
+      <!-- Stop -->
+      <button class="mt-tbtn btn-stop" id="mtBtnStop" title="Stop">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><rect x="4" y="4" width="16" height="16" rx="2"/></svg>
+      </button>
+      <!-- Play / Pause -->
+      <button class="mt-tbtn play-btn" id="mtBtnPlay" title="Play / Pause">
+        <svg id="mtIconPlay" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        <svg id="mtIconPause" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+      </button>
+      <!-- Skip forward 10s -->
+      <button class="mt-tbtn btn-skip" id="mtBtnSkipFwd" title="Skip Forward 10s">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M12.01 5V1l5 5-5 5V7c-3.31 0-6 2.69-6 6s2.69 6 6 6 6-2.69 6-6h2c0 4.42-3.58 8-8 8s-8-3.58-8-8 3.58-8 8-8z"/><text x="16.5" y="15.5" font-size="5" font-weight="bold" fill="currentColor" text-anchor="middle">10</text></svg>
+      </button>
+      <!-- Skip to end -->
+      <button class="mt-tbtn btn-skip" id="mtBtnEnd" title="Skip to End">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zm2-8.14L11.03 12 8 14.14V9.86zM16 6h2v12h-2z"/></svg>
+      </button>
+      <!-- Time + Timeline -->
       <span class="mt-time" id="mtTime">0:00</span>
       <div class="mt-tl-wrap" id="mtTlWrap">
         <div class="mt-tl-track">
@@ -2856,7 +2881,11 @@ function mtInit() {
     if(ctx.state!=='running') await ctx.resume().catch(()=>{});
     mtPlaying ? mtPause() : mtPlay();
   });
-  document.getElementById('mtBtnRewind').addEventListener('click', ()=>mtStop());
+  document.getElementById('mtBtnRewind').addEventListener('click', ()=>{ mtStop(); });
+  document.getElementById('mtBtnStop').addEventListener('click', ()=>{ mtStop(); });
+  document.getElementById('mtBtnSkipBack').addEventListener('click', ()=>{ if(mtDuration) mtSeek(Math.max(0, mtCurrentTime()-10)); });
+  document.getElementById('mtBtnSkipFwd').addEventListener('click', ()=>{ if(mtDuration) mtSeek(Math.min(mtDuration, mtCurrentTime()+10)); });
+  document.getElementById('mtBtnEnd').addEventListener('click', ()=>{ if(mtDuration) mtSeek(mtDuration); });
 
   // Timeline scrub
   const tl=document.getElementById('mtTlWrap'); let tlDrag=false;
@@ -3135,9 +3164,11 @@ async function mtPlay() {
   mtStartTime=startAt; mtPlaying=true;
   document.getElementById('mtIconPlay').style.display='none';
   document.getElementById('mtIconPause').style.display='';
-  document.getElementById('mtBtnPlay').classList.add('active');
+  document.getElementById('mtBtnPlay').classList.add('active','is-playing');
   mtAnimate();
 }
+
+function mtCurrentTime(){ return mtNow(); }
 
 function mtPause() {
   mtOffset=mtNow();
@@ -3145,7 +3176,7 @@ function mtPause() {
   mtPlaying=false; cancelAnimationFrame(mtAnimFrame);
   document.getElementById('mtIconPlay').style.display='';
   document.getElementById('mtIconPause').style.display='none';
-  document.getElementById('mtBtnPlay').classList.remove('active');
+  document.getElementById('mtBtnPlay').classList.remove('active','is-playing');
 }
 
 function mtStop() {
