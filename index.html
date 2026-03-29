@@ -3282,7 +3282,7 @@ async function mtExportMix() {
     const rendered=await off.startRendering();
     const blob=mtBufToWav(rendered);
     const url=URL.createObjectURL(blob);
-    const a=document.createElement('a'); a.href=url; a.download="GYRO_mix.wav'; a.click();
+    const a=document.createElement('a'); a.href=url; a.download='GYRO_mix.wav'; a.click();
     URL.revokeObjectURL(url);
     mtSetStatus('✓ Mix exported!');
   } catch(e){ mtSetStatus('⚠ Export: '+e.message); }
