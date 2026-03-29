@@ -610,14 +610,11 @@ body::after {
 
 /* ── PRODUCER GRID ── */
 .producers-grid {
-  display: flex; flex-direction: row; gap: 1.4rem;
-  overflow-x: auto; overflow-y: hidden;
-  padding: 1rem 0 2rem; scroll-snap-type: x mandatory;
-  -webkit-overflow-scrolling: touch;
-  scrollbar-width: none;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 1.4rem;
+  padding: 1rem 0 2rem;
 }
-.producers-grid::-webkit-scrollbar { display: none; }
-.producers-grid .producer-card { min-width: 260px; max-width: 280px; flex-shrink: 0; scroll-snap-align: start; }
 .producer-card {
   background: rgba(8,8,24,0.7);
   backdrop-filter: blur(8px);
