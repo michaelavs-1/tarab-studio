@@ -1044,136 +1044,143 @@ footer span { color: var(--gold); }
 .mt-tl-head { position:absolute; top:50%; left:0%; transform:translate(-50%,-50%); width:11px; height:11px; border-radius:50%; background:var(--gold-bright); border:2px solid #0a0804; box-shadow:0 0 7px rgba(232,191,98,0.6); }
 
 /* ══════════════════════════════════════════
-   REALISTIC HARDWARE MIXER
+   HARDWARE CONSOLE MIXER
 ══════════════════════════════════════════ */
 .mt-mixer {
   flex-shrink:0; display:flex; flex-direction:row; align-items:stretch;
-  height:300px; overflow-x:auto; overflow-y:hidden;
+  height:430px; overflow-x:auto; overflow-y:hidden;
   background:
-    repeating-linear-gradient(90deg,rgba(255,255,255,0.012) 0px,rgba(255,255,255,0.012) 1px,transparent 1px,transparent 18px),
-    linear-gradient(180deg,#111008 0%,#0b0908 100%);
-  border-top:2px solid rgba(201,162,74,0.22);
-  box-shadow:inset 0 8px 32px rgba(0,0,0,0.8), 0 -1px 0 rgba(0,0,0,0.9);
+    repeating-linear-gradient(90deg,rgba(255,255,255,0.006) 0px,rgba(255,255,255,0.006) 1px,transparent 1px,transparent 22px),
+    repeating-linear-gradient(0deg,rgba(0,0,0,0.12) 0px,rgba(0,0,0,0.12) 1px,transparent 1px,transparent 22px),
+    linear-gradient(180deg,#1c1c1c 0%,#151515 100%);
+  border-top:2px solid #2c2c2c;
+  box-shadow:inset 0 4px 20px rgba(0,0,0,0.7);
 }
-.mt-mixer-ph { display:flex; align-items:center; justify-content:center; flex:1; font-size:0.46rem; color:rgba(60,46,18,0.4); letter-spacing:0.2em; text-transform:uppercase; }
+.mt-mixer-ph { display:flex; align-items:center; justify-content:center; flex:1; font-size:0.46rem; color:rgba(160,160,160,0.25); letter-spacing:0.2em; text-transform:uppercase; }
 
-/* Channel strip — looks like a raised panel */
+/* Channel strip */
 .mt-ch {
-  min-width:76px; max-width:98px; flex:1;
+  min-width:72px; max-width:94px; flex:1;
   display:flex; flex-direction:column; align-items:center;
-  padding:8px 5px 0; gap:0; position:relative;
-  background:linear-gradient(180deg,#181410 0%,#131008 15%,#0f0d09 85%,#131008 100%);
-  border-right:1px solid rgba(0,0,0,0.9);
-  border-left:1px solid rgba(255,255,255,0.04);
-  box-shadow:inset 1px 0 0 rgba(255,255,255,0.03);
+  padding:8px 4px 0; gap:0; position:relative;
+  background:linear-gradient(180deg,#202020 0%,#1b1b1b 50%,#181818 100%);
+  border-right:1px solid #0d0d0d;
+  border-left:1px solid #2a2a2a;
 }
-.mt-ch.vocal-ch { background:linear-gradient(180deg,#1a1410 0%,#140f0a 15%,#100e09 85%,#140f0a 100%); border-top:3px solid rgba(200,121,58,0.5); }
+.mt-ch.vocal-ch { border-top:3px solid #b04010; }
 
 /* Channel number badge */
 .mt-ch-num {
-  position:absolute; top:5px; right:6px;
-  font-size:0.32rem; font-weight:700; letter-spacing:0.04em;
-  color:rgba(201,162,74,0.3); pointer-events:none;
+  position:absolute; top:4px; right:5px;
+  font-size:0.30rem; font-weight:700; letter-spacing:0.04em;
+  color:rgba(255,255,255,0.16); pointer-events:none;
 }
 
-/* Pan knob section */
-.mt-pan-wrap { display:flex; flex-direction:column; align-items:center; gap:2px; margin-bottom:7px; flex-shrink:0; }
-.mt-pan-knob {
-  width:24px; height:24px; border-radius:50%; cursor:pointer;
-  background:radial-gradient(circle at 38% 32%, #2e2418 0%, #181009 60%, #0c0806 100%);
-  border:1px solid rgba(80,62,22,0.7);
-  box-shadow:0 3px 8px rgba(0,0,0,0.85), 0 1px 2px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.07), inset 0 -1px 0 rgba(0,0,0,0.5);
-  position:relative;
+/* Generic knob row */
+.mt-knob-row { display:flex; flex-direction:column; align-items:center; gap:1px; margin-bottom:4px; flex-shrink:0; }
+.mt-knob {
+  width:22px; height:22px; border-radius:50%; cursor:pointer; position:relative;
+  background:radial-gradient(circle at 38% 32%, #3e3e3e 0%, #1e1e1e 55%, #101010 100%);
+  border:1px solid #3c3c3c;
+  box-shadow:0 3px 9px rgba(0,0,0,0.9), 0 1px 3px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.09), inset 0 -1px 0 rgba(0,0,0,0.6);
 }
-.mt-pan-dot { position:absolute; width:3px; height:3px; border-radius:50%; background:rgba(201,162,74,0.85); top:3px; left:50%; transform:translateX(-50%); box-shadow:0 0 4px rgba(201,162,74,0.5); }
-.mt-pan-lbl { font-size:0.29rem; font-weight:700; letter-spacing:0.1em; color:rgba(90,70,25,0.5); text-transform:uppercase; }
+.mt-knob.knob-gain {
+  width:26px; height:26px;
+  background:radial-gradient(circle at 38% 32%, #474747 0%, #252525 50%, #131313 100%);
+  border-color:#404040;
+}
+.mt-knob.knob-pan {
+  background:radial-gradient(circle at 38% 32%, #2c2c3e 0%, #181828 55%, #0e0e18 100%);
+  border-color:#38384e;
+}
+.mt-knob-dot { position:absolute; width:2.5px; height:2.5px; border-radius:50%; background:rgba(255,255,255,0.88); top:3.5px; left:50%; transform:translateX(-50%); }
+.mt-knob.knob-pan .mt-knob-dot { background:#9aadff; box-shadow:0 0 3px rgba(154,173,255,0.6); }
+.mt-knob-lbl { font-size:0.265rem; font-weight:700; letter-spacing:0.07em; color:rgba(180,180,180,0.38); text-transform:uppercase; }
+
+/* Thin separator */
+.mt-ch-sep { width:82%; height:1px; background:rgba(255,255,255,0.055); flex-shrink:0; margin:3px 0 4px; }
 
 /* Fader slot */
-.mt-fader-rail-wrap { flex:1; display:flex; flex-direction:column; align-items:center; width:100%; position:relative; min-height:0; }
+.mt-fader-rail-wrap { flex:1; display:flex; flex-direction:column; align-items:center; width:100%; position:relative; min-height:60px; }
 .mt-fader-rail {
-  position:absolute; top:8px; bottom:8px; left:50%; transform:translateX(-50%);
-  width:6px; border-radius:3px; pointer-events:none;
-  background:linear-gradient(180deg,#060403 0%,#0e0b06 30%,#060403 100%);
+  position:absolute; top:6px; bottom:6px; left:50%; transform:translateX(-50%);
+  width:5px; border-radius:2px; pointer-events:none;
+  background:linear-gradient(180deg,#080808 0%,#0f0f0f 50%,#080808 100%);
   border:1px solid rgba(0,0,0,0.95);
-  box-shadow:inset 0 2px 12px rgba(0,0,0,1), 0 0 0 1px rgba(201,162,74,0.06);
+  box-shadow:inset 0 2px 12px rgba(0,0,0,1), 0 0 0 1px rgba(255,255,255,0.025);
 }
-/* dB scale ticks */
-.mt-fader-ticks { position:absolute; right:calc(50% + 10px); top:8px; bottom:8px; display:flex; flex-direction:column; justify-content:space-between; pointer-events:none; }
-.mt-fader-ticks span { display:block; height:1px; border-radius:1px; background:rgba(100,78,28,0.35); }
-.mt-fader-ticks span:nth-child(1),.mt-fader-ticks span:nth-child(7) { width:7px; background:rgba(130,100,35,0.5); }
+/* dB ticks */
+.mt-fader-ticks { position:absolute; right:calc(50% + 8px); top:6px; bottom:6px; display:flex; flex-direction:column; justify-content:space-between; pointer-events:none; }
+.mt-fader-ticks span { display:block; height:1px; border-radius:1px; background:rgba(200,200,200,0.18); }
+.mt-fader-ticks span:nth-child(1),.mt-fader-ticks span:nth-child(7) { width:7px; background:rgba(220,220,220,0.32); }
 .mt-fader-ticks span:nth-child(2),.mt-fader-ticks span:nth-child(3),.mt-fader-ticks span:nth-child(5),.mt-fader-ticks span:nth-child(6) { width:4px; }
-.mt-fader-ticks span:nth-child(4) { width:9px; background:rgba(201,162,74,0.7); } /* 0dB */
+.mt-fader-ticks span:nth-child(4) { width:9px; background:rgba(255,255,255,0.55); }
 
 /* VU meter */
-.mt-vu { position:absolute; right:4px; top:8px; bottom:8px; width:10px; pointer-events:none; border-radius:2px; background:#050403; box-shadow:inset 0 0 6px rgba(0,0,0,0.9), 0 0 0 1px rgba(0,0,0,0.6); }
+.mt-vu { position:absolute; right:3px; top:6px; bottom:6px; width:10px; pointer-events:none; border-radius:2px; background:#060606; box-shadow:inset 0 0 6px rgba(0,0,0,0.9), 0 0 0 1px rgba(0,0,0,0.5); }
 
-/* Invisible range input (hit target) */
-.mt-vfader { -webkit-appearance:slider-vertical; writing-mode:vertical-lr; direction:rtl; width:38px; height:calc(100% - 14px); background:transparent; outline:none; cursor:grab; position:relative; z-index:2; opacity:0; }
+/* Range input */
+.mt-vfader { -webkit-appearance:slider-vertical; writing-mode:vertical-lr; direction:rtl; width:36px; height:calc(100% - 12px); background:transparent; outline:none; cursor:grab; position:relative; z-index:2; opacity:0; }
 .mt-vfader:active { cursor:grabbing; }
 
-/* Fader cap — 3D hardware look */
+/* Fader cap — light grey, real console style */
 .mt-fader-cap {
   position:absolute; left:50%; transform:translateX(-50%);
-  width:46px; height:18px; border-radius:3px; pointer-events:none;
+  width:44px; height:16px; border-radius:2px; pointer-events:none;
   background:linear-gradient(180deg,
-    #e8d06a 0%, #c8a83e 12%,
-    #a88020 28%, #987218 42%,
-    #b89030 58%, #c8a03a 72%,
-    #a07020 85%, #c4a040 100%);
-  border-top:1px solid rgba(255,230,120,0.5);
-  border-bottom:1px solid rgba(0,0,0,0.7);
-  border-left:1px solid rgba(180,140,40,0.4);
-  border-right:1px solid rgba(180,140,40,0.4);
-  box-shadow:0 5px 15px rgba(0,0,0,0.95), 0 2px 4px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,200,0.4);
+    #ececec 0%, #d8d8d8 18%,
+    #c2c2c2 38%, #b8b8b8 52%,
+    #cacaca 68%, #d6d6d6 82%,
+    #bababa 100%);
+  border-top:1px solid rgba(255,255,255,0.95);
+  border-bottom:1px solid rgba(0,0,0,0.55);
+  border-left:1px solid rgba(200,200,200,0.55);
+  border-right:1px solid rgba(200,200,200,0.55);
+  box-shadow:0 4px 14px rgba(0,0,0,0.95), 0 2px 4px rgba(0,0,0,0.75), inset 0 1px 0 rgba(255,255,255,0.85);
 }
-.mt-fader-cap::before { content:''; position:absolute; top:5px; left:7px; right:7px; height:2px; background:rgba(0,0,0,0.3); border-radius:1px; }
-.mt-fader-cap::after  { content:''; position:absolute; top:10px; left:7px; right:7px; height:2px; background:rgba(0,0,0,0.2); border-radius:1px; }
+.mt-fader-cap::before { content:''; position:absolute; top:4px; left:8px; right:8px; height:1.5px; background:rgba(0,0,0,0.16); border-radius:1px; }
+.mt-fader-cap::after  { content:''; position:absolute; top:9px; left:8px; right:8px; height:1.5px; background:rgba(0,0,0,0.12); border-radius:1px; }
 .mt-fader-cap.voc-cap {
-  background:linear-gradient(180deg,#e09858 0%,#c07030 12%,#a05018 28%,#904010 42%,#b06028 58%,#c07030 72%,#9a4810 85%,#be7030 100%);
-  border-top-color:rgba(255,180,100,0.4); border-bottom-color:rgba(0,0,0,0.7);
+  background:linear-gradient(180deg,#f2c888 0%,#d89040 18%,#ba6820 38%,#a85810 52%,#c87028 68%,#d88838 82%,#bc6820 100%);
+  border-top-color:rgba(255,210,140,0.9); border-bottom-color:rgba(0,0,0,0.6);
 }
 
-/* Mute + Solo LED buttons */
-.mt-ms-row { display:flex; gap:5px; justify-content:center; align-items:center; flex-shrink:0; padding:6px 0 5px; width:100%; }
+/* M/S buttons — rectangular LED style like real consoles */
+.mt-ms-row { display:flex; gap:4px; justify-content:center; align-items:center; flex-shrink:0; padding:5px 0 3px; width:100%; }
 .mt-ms-btn {
-  width:26px; height:26px; border-radius:50%; cursor:pointer;
+  width:25px; height:13px; border-radius:2px; cursor:pointer;
   display:flex; align-items:center; justify-content:center;
-  font-size:0.40rem; font-weight:900; letter-spacing:0.05em;
-  font-family:'Inter',sans-serif; transition:all 0.1s;
-  position:relative;
+  font-size:0.28rem; font-weight:900; letter-spacing:0.06em;
+  font-family:'Inter',sans-serif; transition:all 0.07s;
 }
 .mt-mute {
-  background:radial-gradient(circle at 40% 35%, #1e1509, #0c0905);
-  border:1px solid rgba(60,46,18,0.8);
-  color:rgba(100,78,28,0.4);
-  box-shadow:0 3px 6px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05), inset 0 -1px 0 rgba(0,0,0,0.4);
+  background:#181818; border:1px solid #2e2e2e;
+  color:rgba(190,190,190,0.28);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.04), 0 2px 4px rgba(0,0,0,0.65);
 }
-.mt-mute:hover { color:rgba(220,80,70,0.5); border-color:rgba(200,60,50,0.4); }
+.mt-mute:hover { border-color:#b03010; color:rgba(210,80,30,0.55); }
 .mt-mute.active {
-  background:radial-gradient(circle at 40% 35%, #f04040, #b01818);
-  border:1px solid rgba(255,80,80,0.5);
-  color:#fff;
-  box-shadow:0 0 14px rgba(240,60,60,0.7), 0 0 4px rgba(255,120,120,0.5), inset 0 1px 0 rgba(255,200,200,0.2), inset 0 -1px 0 rgba(0,0,0,0.3);
+  background:linear-gradient(180deg,#e05818,#b83010);
+  border:1px solid #ff5818; color:#fff;
+  box-shadow:0 0 10px rgba(230,88,24,0.85), inset 0 1px 0 rgba(255,200,160,0.3);
 }
 .mt-solo {
-  background:radial-gradient(circle at 40% 35%, #1e1509, #0c0905);
-  border:1px solid rgba(60,46,18,0.8);
-  color:rgba(100,78,28,0.4);
-  box-shadow:0 3px 6px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05), inset 0 -1px 0 rgba(0,0,0,0.4);
+  background:#181818; border:1px solid #2e2e2e;
+  color:rgba(190,190,190,0.28);
+  box-shadow:inset 0 1px 0 rgba(255,255,255,0.04), 0 2px 4px rgba(0,0,0,0.65);
 }
-.mt-solo:hover { color:rgba(220,175,40,0.5); border-color:rgba(200,160,30,0.4); }
+.mt-solo:hover { border-color:#908000; color:rgba(190,160,0,0.55); }
 .mt-solo.active {
-  background:radial-gradient(circle at 40% 35%, #f0c020, #b08800);
-  border:1px solid rgba(255,210,60,0.5);
-  color:#1a1000;
-  box-shadow:0 0 14px rgba(240,192,32,0.75), 0 0 4px rgba(255,220,80,0.5), inset 0 1px 0 rgba(255,250,180,0.3), inset 0 -1px 0 rgba(0,0,0,0.2);
+  background:linear-gradient(180deg,#e0aa00,#b88000);
+  border:1px solid #ffcc00; color:#0a0800;
+  box-shadow:0 0 10px rgba(224,170,0,0.85), inset 0 1px 0 rgba(255,240,120,0.4);
 }
 
 /* Channel footer */
-.mt-ch-footer { width:100%; flex-shrink:0; background:rgba(0,0,0,0.45); border-top:1px solid rgba(0,0,0,0.7); padding:4px 3px 5px; text-align:center; }
-.mt-ch-lbl { font-size:0.42rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:rgba(201,162,74,0.72); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
-.mt-ch.vocal-ch .mt-ch-lbl { color:rgba(200,121,58,0.9); }
-.mt-ch-val { font-size:0.34rem; font-weight:600; font-variant-numeric:tabular-nums; color:rgba(130,100,38,0.5); display:block; margin-top:1px; letter-spacing:0.04em; }
+.mt-ch-footer { width:100%; flex-shrink:0; background:#111; border-top:1px solid #0a0a0a; padding:3px 3px 4px; text-align:center; }
+.mt-ch-lbl { font-size:0.36rem; font-weight:800; letter-spacing:0.12em; text-transform:uppercase; color:rgba(220,220,220,0.58); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
+.mt-ch.vocal-ch .mt-ch-lbl { color:rgba(210,130,70,0.92); }
+.mt-ch-val { font-size:0.29rem; font-weight:600; font-variant-numeric:tabular-nums; color:rgba(150,150,150,0.38); display:block; margin-top:1px; letter-spacing:0.04em; }
 
 /* ── Bottom bar ── */
 .mt-bottom-bar { flex-shrink:0; height:50px; display:flex; align-items:center; gap:0.8rem; padding:0 1rem; background:#0d0a05; border-top:1px solid rgba(35,26,10,0.9); }
@@ -3005,9 +3012,31 @@ function mtRenderMixer() {
     strip.className='mt-ch'+(ch.isVocal?' vocal-ch':'');
     strip.innerHTML=`
       <span class="mt-ch-num">${i+1}</span>
-      <div class="mt-pan-wrap">
-        <div class="mt-pan-knob"><div class="mt-pan-dot"></div></div>
-        <span class="mt-pan-lbl">PAN</span>
+      <div class="mt-knob-row">
+        <div class="mt-knob knob-gain"><div class="mt-knob-dot"></div></div>
+        <span class="mt-knob-lbl">GAIN</span>
+      </div>
+      <div class="mt-ch-sep"></div>
+      <div class="mt-knob-row">
+        <div class="mt-knob"><div class="mt-knob-dot"></div></div>
+        <span class="mt-knob-lbl">HI</span>
+      </div>
+      <div class="mt-knob-row">
+        <div class="mt-knob"><div class="mt-knob-dot"></div></div>
+        <span class="mt-knob-lbl">MID</span>
+      </div>
+      <div class="mt-knob-row">
+        <div class="mt-knob"><div class="mt-knob-dot"></div></div>
+        <span class="mt-knob-lbl">LOW</span>
+      </div>
+      <div class="mt-ch-sep"></div>
+      <div class="mt-knob-row">
+        <div class="mt-knob knob-pan"><div class="mt-knob-dot"></div></div>
+        <span class="mt-knob-lbl">PAN</span>
+      </div>
+      <div class="mt-ms-row">
+        <button class="mt-ms-btn mt-mute" id="mtMute_${i}" title="Mute">M</button>
+        <button class="mt-ms-btn mt-solo" id="mtSolo_${i}" title="Solo">S</button>
       </div>
       <div class="mt-fader-rail-wrap">
         <div class="mt-fader-rail"></div>
@@ -3015,10 +3044,6 @@ function mtRenderMixer() {
         <input type="range" class="mt-vfader" id="mtFader_${i}" min="0" max="1.5" step="0.01" value="1">
         <div class="mt-fader-cap${ch.isVocal?' voc-cap':''}" id="mtCap_${i}"></div>
         <canvas class="mt-vu" id="mtVu_${i}" width="10" height="120"></canvas>
-      </div>
-      <div class="mt-ms-row">
-        <button class="mt-ms-btn mt-mute" id="mtMute_${i}" title="Mute">M</button>
-        <button class="mt-ms-btn mt-solo" id="mtSolo_${i}" title="Solo">S</button>
       </div>
       <div class="mt-ch-footer">
         <span class="mt-ch-lbl" title="${ch.name}">${ch.name}</span>
