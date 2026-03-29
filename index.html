@@ -593,6 +593,42 @@ body::after {
 .reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s cubic-bezier(0.25,0.46,0.45,0.94), transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94); }
 .reveal.visible { opacity: 1; transform: translateY(0); }
 
+/* ══ BEATS PAGE ══ */
+.beats-shell { display:flex; flex-direction:column; height:100vh; background:var(--bg); overflow:hidden; }
+.beats-header { display:flex; align-items:center; gap:1rem; padding:1rem 1.5rem; background:var(--bg2); border-bottom:1px solid var(--border); flex-shrink:0; }
+.beats-back-btn { display:flex; align-items:center; gap:0.4rem; background:none; border:1px solid var(--border); color:var(--text-mid); padding:0.4rem 0.9rem; border-radius:50px; cursor:pointer; font-size:0.8rem; font-weight:600; transition:all 0.2s; }
+.beats-back-btn:hover { border-color:var(--gold); color:var(--gold); }
+.beats-title { font-family:'Playfair Display',serif; font-size:1.2rem; font-weight:700; color:var(--text); }
+.beats-subtitle { font-size:0.72rem; color:var(--text-dim); margin-left:auto; }
+.beats-now-playing { flex-shrink:0; background:#0a0804; border-bottom:2px solid rgba(29,185,84,0.3); padding:0.8rem 1.5rem; display:flex; align-items:center; gap:1.2rem; }
+.bnp-info { display:flex; flex-direction:column; min-width:160px; }
+.bnp-producer { font-size:0.62rem; color:var(--gold); text-transform:uppercase; letter-spacing:0.1em; font-weight:700; }
+.bnp-title { font-size:0.88rem; font-weight:600; color:var(--text); }
+.bnp-controls { display:flex; align-items:center; gap:0.5rem; flex-shrink:0; }
+.bnp-btn { width:34px; height:34px; border-radius:50%; border:none; background:#1e1a12; color:#888; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.15s; }
+.bnp-btn:hover { color:#ccc; }
+.bnp-play { width:44px; height:44px; background:linear-gradient(145deg,#1db954,#158a3e); color:#fff; box-shadow:0 0 14px rgba(29,185,84,0.35); }
+.bnp-play:hover { box-shadow:0 0 22px rgba(29,185,84,0.55); }
+.bnp-progress-wrap { flex:1; display:flex; align-items:center; gap:0.7rem; min-width:0; }
+.bnp-time, .bnp-dur { font-size:0.7rem; font-weight:700; color:var(--text-dim); font-variant-numeric:tabular-nums; flex-shrink:0; }
+.bnp-bar { flex:1; height:5px; background:#1c1508; border-radius:3px; cursor:pointer; position:relative; }
+.bnp-fill { height:100%; background:linear-gradient(90deg,#1db954,#e8bf62); border-radius:3px; width:0%; transition:width 0.1s linear; pointer-events:none; }
+.beats-body { flex:1; overflow-y:auto; padding:1.5rem; }
+.beats-producer-section { margin-bottom:2.5rem; }
+.beats-producer-name { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:700; color:var(--gold); margin-bottom:1rem; padding-bottom:0.5rem; border-bottom:1px solid var(--border); display:flex; align-items:center; gap:0.6rem; }
+.beats-producer-name::before { content:''; width:3px; height:18px; background:var(--gold); border-radius:2px; display:inline-block; }
+.beats-grid { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:0.75rem; }
+.beat-card { background:var(--surface); border:1px solid var(--border); border-radius:10px; padding:0.9rem 1rem; display:flex; align-items:center; gap:0.8rem; cursor:pointer; transition:all 0.2s; }
+.beat-card:hover { border-color:rgba(29,185,84,0.4); background:var(--surface-2); transform:translateY(-2px); }
+.beat-card.is-playing { border-color:#1db954; background:rgba(29,185,84,0.06); }
+.beat-card-play { width:36px; height:36px; min-width:36px; border-radius:50%; background:var(--surface-2); border:1px solid var(--border); color:var(--gold); display:flex; align-items:center; justify-content:center; transition:all 0.2s; flex-shrink:0; }
+.beat-card:hover .beat-card-play, .beat-card.is-playing .beat-card-play { background:#1db954; border-color:#1db954; color:#fff; }
+.beat-card-info { min-width:0; flex:1; }
+.beat-card-title { font-size:0.83rem; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.beat-card-meta { font-size:0.68rem; color:var(--text-dim); margin-top:2px; }
+.nav-beats-btn { display:inline-flex; align-items:center; gap:0.5rem; background:linear-gradient(135deg,var(--surface-2),var(--surface)); border:1px solid var(--border); color:var(--text-mid); padding:0.42rem 1rem; border-radius:50px; cursor:pointer; font-size:0.72rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; transition:all 0.25s; text-decoration:none; }
+.nav-beats-btn:hover { border-color:var(--gold); color:var(--gold); }
+
 /* ── PRODUCER GRID ── */
 .producers-grid {
   display: grid;
@@ -1316,6 +1352,10 @@ footer span { color: var(--gold); }
     <a href="#" onclick="navScroll('mission'); return false;">About</a>
     <a href="#" onclick="navScroll('process'); return false;">How It Works</a>
     <a href="#" onclick="navScroll('contact'); return false;">Contact</a>
+    <a href="#" class="nav-beats-btn" onclick="showBeats(); return false;">
+      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z"/></svg>
+      Beats
+    </a>
     <a href="#" class="nav-mixer-btn" onclick="showMixer(); return false;">
       <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="2" width="2" height="12" rx="1"/><rect x="7" y="5" width="2" height="9" rx="1"/><rect x="12" y="1" width="2" height="13" rx="1"/><rect x="1" y="9" width="4" height="1.5" rx="0.75" fill="currentColor" opacity="0.7"/><rect x="6" y="6" width="4" height="1.5" rx="0.75" fill="currentColor" opacity="0.7"/><rect x="11" y="11" width="4" height="1.5" rx="0.75" fill="currentColor" opacity="0.7"/></svg>
       Mix it!
@@ -1711,6 +1751,46 @@ footer span { color: var(--gold); }
   </div>
 </div>
 
+<!-- ══ BEATS PAGE ══ -->
+<div class="page" id="beatsPage">
+  <div class="beats-shell">
+    <div class="beats-header">
+      <button class="beats-back-btn" onclick="showHome()">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 18 9 12 15 6"/></svg>
+        Back
+      </button>
+      <span class="beats-title">Available Beats</span>
+      <span class="beats-subtitle">Browse and preview tracks</span>
+    </div>
+    <div class="beats-now-playing" id="beatsNowPlaying" style="display:none">
+      <div class="bnp-info">
+        <span class="bnp-producer" id="bnpProducer"></span>
+        <span class="bnp-title" id="bnpTitle"></span>
+      </div>
+      <div class="bnp-controls">
+        <button class="bnp-btn" id="bnpPrev" onclick="bpPrev()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 6h2v12H6zm3.5 6 8.5 6V6z"/></svg>
+        </button>
+        <button class="bnp-btn bnp-play" id="bnpPlayBtn" onclick="bpToggle()">
+          <svg id="bnpIconPlay" width="20" height="20" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+          <svg id="bnpIconPause" width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="display:none"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        </button>
+        <button class="bnp-btn" id="bnpNext" onclick="bpNext()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor"><path d="M6 18l8.5-6L6 6v12zm2-8.14L11.03 12 8 14.14V9.86zM16 6h2v12h-2z"/></svg>
+        </button>
+      </div>
+      <div class="bnp-progress-wrap">
+        <span class="bnp-time" id="bnpTime">0:00</span>
+        <div class="bnp-bar" id="bnpBar" onclick="bpSeek(event)">
+          <div class="bnp-fill" id="bnpFill"></div>
+        </div>
+        <span class="bnp-dur" id="bnpDur">0:00</span>
+      </div>
+    </div>
+    <div class="beats-body" id="beatsBody"></div>
+  </div>
+</div>
+
 <script>
 // ══════════════════════════════════════
 // SITE LOADER
@@ -2019,7 +2099,24 @@ const producers = [
     youtube:'https://www.youtube.com/@isaacdabom',
     podcast:'https://isaacdabom.podbean.com/',
     artists:[{name:'Netzach Netzach (Ravid Plotnik)',url:'https://open.spotify.com/artist/2JQK9mzxqKz16lSgICHDTx'},{name:'Jimbo J',url:'https://open.spotify.com/artist/6ltKIf1bortd0DQbpgKdQu'},{name:'Pedro Grass',url:'https://www.facebook.com/pedropoetry'},{name:'Hadag Nahash',url:'https://open.spotify.com/artist/78u2puZeKJRYIfNHkx2Jdh'},'Eco','SPA Band','Michal Lotan','Yoel Shemesh','Hadara Levin Areddy'],
-    beats:[{title:'HipHopera Overture',bpm:95,key:'Dm',duration:'3:40'},{title:'Rehovot Nights',bpm:88,key:'Am',duration:'3:15'},{title:'Golden Hedgehog',bpm:105,key:'Gm',duration:'3:28'},{title:'Urban Groove',bpm:92,key:'Em',duration:'3:52'}],
+    beats:[
+      {title:'A Choir Beat',duration:'',url:'https://www.dropbox.com/scl/fo/jhv93cz4gv0glc8mi806n/ACJOej1pyTeW8dBj0LiTLjM/A%20Choir%20Beat%2020-11-20.mp3?rlkey=hcy2qcw38g38ovcuoumr72nxg&dl=1'},
+      {title:'A G Dodi Beat',duration:'',url:'https://www.dropbox.com/scl/fo/jhv93cz4gv0glc8mi806n/ANDHePXhw9-ST-2_XMN5kjM/A%20G%20Dodi%20Beat%202-1-25.mp3?rlkey=hcy2qcw38g38ovcuoumr72nxg&dl=1'},
+      {title:'Ad Matay Beat',duration:'',url:'https://www.dropbox.com/scl/fo/jhv93cz4gv0glc8mi806n/AInhvFVF-pLwjHjcRn6fDCU/Ad%20Matay%20Beat%202-1-25.mp3?rlkey=hcy2qcw38g38ovcuoumr72nxg&dl=1'},
+      {title:'Beat 1',duration:'',url:'https://www.dropbox.com/scl/fo/jhv93cz4gv0glc8mi806n/AHsBiH6_pFrzA09vFww8SA0/Beat%201%2029-5-24.mp3?rlkey=hcy2qcw38g38ovcuoumr72nxg&dl=1'},
+      {title:'Beat 2',duration:'',url:'https://www.dropbox.com/scl/fo/jhv93cz4gv0glc8mi806n/AKiph6aT9t1rV5iLfacf604/Beat%202%2029-5-24.mp3?rlkey=hcy2qcw38g38ovcuoumr72nxg&dl=1'},
+      {title:'Beat 3',duration:'',url:'https://www.dropbox.com/scl/fo/jhv93cz4gv0glc8mi806n/AEssQE4CQ0hZr790s0QG4p4/Beat%203%2029-5-24.mp3?rlkey=hcy2qcw38g38ovcuoumr72nxg&dl=1'},
+      {title:'Beat 4',duration:'',url:'https://www.dropbox.com/scl/fo/jhv93cz4gv0glc8mi806n/AOdhsS9RPZsZ06ZWg3B6D5Q/Beat%204%2030-5-24.mp3?rlkey=hcy2qcw38g38ovcuoumr72nxg&dl=1'},
+      {title:'Beat 5',duration:'',url:'https://www.dropbox.com/scl/fo/jhv93cz4gv0glc8mi806n/AAtxsk6D2wgP1OeWZtX9XxI/Beat%205%2031-5-24.mp3?rlkey=hcy2qcw38g38ovcuoumr72nxg&dl=1'},
+      {title:'Beat 6',duration:'',url:'https://www.dropbox.com/scl/fo/jhv93cz4gv0glc8mi806n/AFCc5l1_xtICaXVQDTZlP3A/Beat%206%202%201-6-24.mp3?rlkey=hcy2qcw38g38ovcuoumr72nxg&dl=1'},
+      {title:'Darbuka Beat Idea 3',duration:'',url:'https://www.dropbox.com/scl/fo/jhv93cz4gv0glc8mi806n/APXtqTfOBYHb2nwjt7dGQMI/Darbuka%20Beat%20Idea%203%208-7-20.mp3?rlkey=hcy2qcw38g38ovcuoumr72nxg&dl=1'},
+      {title:'Drum Circle Beat',duration:'',url:'https://www.dropbox.com/scl/fo/jhv93cz4gv0glc8mi806n/ALwEBtW6HEFCXotHp4MQT9E/Drum%20Circle%20Beat%2015-4-20.mp3?rlkey=hcy2qcw38g38ovcuoumr72nxg&dl=1'},
+      {title:'Kalimba Beat 2',duration:'',url:'https://www.dropbox.com/scl/fo/jhv93cz4gv0glc8mi806n/AAIfZZUOqg5nljV1D_UX4kQ/Kalimba%20Beat%202%2015-2-21.mp3?rlkey=hcy2qcw38g38ovcuoumr72nxg&dl=1'},
+      {title:'Late Beat',duration:'',url:'https://www.dropbox.com/scl/fo/jhv93cz4gv0glc8mi806n/AJvXQQX1JU4OzIlsR1pbQYM/Late%20Beat%2016-4-20.mp3?rlkey=hcy2qcw38g38ovcuoumr72nxg&dl=1'},
+      {title:'Levad Beat 2',duration:'',url:'https://www.dropbox.com/scl/fo/jhv93cz4gv0glc8mi806n/AN4JxQ-HhX6SfObUWGWdL1s/levad%20Beat%202%2016-6-18.mp3?rlkey=hcy2qcw38g38ovcuoumr72nxg&dl=1'},
+      {title:'Nifradnu Beat',duration:'',url:'https://www.dropbox.com/scl/fo/jhv93cz4gv0glc8mi806n/APKaTDLfRzd4XojGh5iRGZo/Nifradnu%20Beat%201-2-25.mp3?rlkey=hcy2qcw38g38ovcuoumr72nxg&dl=1'},
+      {title:'Pariente Beat',duration:'',url:'https://www.dropbox.com/scl/fo/jhv93cz4gv0glc8mi806n/AHLzhDVXyk5Ic2zxiofJp2o/Pariente%20Beat%205-1-25.mp3?rlkey=hcy2qcw38g38ovcuoumr72nxg&dl=1'}
+    ],
     credits:45,years:15,avatarSeed:'isaac-dabom-il'
   },
   {
@@ -2103,9 +2200,11 @@ const icons = {
 let savedScrollY = 0;
 function showHome() {
   stopAudio();
+  if (bpAudio) { bpAudio.pause(); bpAudio = null; bpPlaying = false; }
   document.getElementById('homePage').classList.add('active');
   document.getElementById('producerPage').classList.remove('active');
   document.getElementById('mixerPage').classList.remove('active');
+  document.getElementById('beatsPage').classList.remove('active');
   requestAnimationFrame(() => window.scrollTo({ top: savedScrollY, behavior: 'instant' }));
   history.pushState({page:'home'}, '', '#');
 }
@@ -2114,11 +2213,130 @@ function showMixer() {
   stopAudio();
   document.getElementById('homePage').classList.remove('active');
   document.getElementById('producerPage').classList.remove('active');
+  document.getElementById('beatsPage').classList.remove('active');
   document.getElementById('mixerPage').classList.add('active');
   window.scrollTo(0, 0);
   history.pushState({page:'mixer'}, '', '#mixer');
   mtInit();
   if(mtCtx && mtCtx.state!=='running') mtCtx.resume().catch(()=>{});
+}
+
+// ══ BEATS PAGE ══
+let bpAudio = null, bpCurrentIndex = -1, bpAllBeats = [], bpPlaying = false;
+
+function showBeats() {
+  stopAudio();
+  document.getElementById('homePage').classList.remove('active');
+  document.getElementById('producerPage').classList.remove('active');
+  document.getElementById('mixerPage').classList.remove('active');
+  document.getElementById('beatsPage').classList.add('active');
+  window.scrollTo(0, 0);
+  history.pushState({page:'beats'}, '', '#beats');
+  bpRender();
+}
+
+function bpRender() {
+  const body = document.getElementById('beatsBody');
+  bpAllBeats = [];
+  const sections = [
+    { producer: producers.find(p => p.id === 'isaac-dabom') },
+    { producer: producers.find(p => p.id === 'benno') }
+  ];
+  let html = '';
+  sections.forEach(({ producer: p }) => {
+    if (!p || !p.beats || !p.beats.length) return;
+    html += `<div class="beats-producer-section">
+      <div class="beats-producer-name">${p.name}</div>
+      <div class="beats-grid">`;
+    p.beats.forEach((beat, i) => {
+      const globalIdx = bpAllBeats.length;
+      bpAllBeats.push({ ...beat, producerName: p.name });
+      html += `<div class="beat-card" id="bcard-${globalIdx}" onclick="bpPlay(${globalIdx})">
+        <div class="beat-card-play">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <div class="beat-card-info">
+          <div class="beat-card-title">${beat.title}</div>
+          <div class="beat-card-meta">${beat.bpm ? beat.bpm+' BPM' : ''}${beat.key ? ' · '+beat.key : ''}${beat.duration ? ' · '+beat.duration : ''}</div>
+        </div>
+      </div>`;
+    });
+    html += '</div></div>';
+  });
+  body.innerHTML = html;
+}
+
+function bpPlay(idx) {
+  if (idx < 0 || idx >= bpAllBeats.length) return;
+  const beat = bpAllBeats[idx];
+  if (!beat.url) { alert('No audio available for this beat.'); return; }
+  // Stop previous
+  if (bpAudio) { bpAudio.pause(); bpAudio.src = ''; }
+  // Deactivate old card
+  if (bpCurrentIndex >= 0) {
+    const old = document.getElementById('bcard-' + bpCurrentIndex);
+    if (old) old.classList.remove('is-playing');
+  }
+  bpCurrentIndex = idx;
+  bpAudio = new Audio(beat.url);
+  bpAudio.crossOrigin = 'anonymous';
+  bpPlaying = true;
+  bpAudio.play().catch(()=>{});
+  bpAudio.ontimeupdate = bpUpdateProgress;
+  bpAudio.onended = () => bpNext();
+  bpAudio.onloadedmetadata = () => {
+    const d = bpAudio.duration;
+    document.getElementById('bnpDur').textContent = bpFmt(d);
+  };
+  // Update now playing bar
+  document.getElementById('beatsNowPlaying').style.display = 'flex';
+  document.getElementById('bnpProducer').textContent = beat.producerName;
+  document.getElementById('bnpTitle').textContent = beat.title;
+  document.getElementById('bnpIconPlay').style.display = 'none';
+  document.getElementById('bnpIconPause').style.display = '';
+  // Activate card
+  const card = document.getElementById('bcard-' + idx);
+  if (card) { card.classList.add('is-playing'); card.scrollIntoView({ behavior:'smooth', block:'nearest' }); }
+}
+
+function bpToggle() {
+  if (!bpAudio) return;
+  if (bpPlaying) {
+    bpAudio.pause(); bpPlaying = false;
+    document.getElementById('bnpIconPlay').style.display = '';
+    document.getElementById('bnpIconPause').style.display = 'none';
+  } else {
+    bpAudio.play(); bpPlaying = true;
+    document.getElementById('bnpIconPlay').style.display = 'none';
+    document.getElementById('bnpIconPause').style.display = '';
+  }
+}
+
+function bpNext() {
+  if (bpCurrentIndex < bpAllBeats.length - 1) bpPlay(bpCurrentIndex + 1);
+}
+function bpPrev() {
+  if (bpCurrentIndex > 0) bpPlay(bpCurrentIndex - 1);
+}
+
+function bpUpdateProgress() {
+  if (!bpAudio || !bpAudio.duration) return;
+  const pct = (bpAudio.currentTime / bpAudio.duration) * 100;
+  document.getElementById('bnpFill').style.width = pct + '%';
+  document.getElementById('bnpTime').textContent = bpFmt(bpAudio.currentTime);
+}
+
+function bpSeek(e) {
+  if (!bpAudio || !bpAudio.duration) return;
+  const bar = document.getElementById('bnpBar');
+  const r = bar.getBoundingClientRect();
+  bpAudio.currentTime = ((e.clientX - r.left) / r.width) * bpAudio.duration;
+}
+
+function bpFmt(s) {
+  if (!s || isNaN(s)) return '0:00';
+  const m = Math.floor(s / 60), sec = Math.floor(s % 60);
+  return m + ':' + (sec < 10 ? '0' : '') + sec;
 }
 
 function showProducer(id) {
