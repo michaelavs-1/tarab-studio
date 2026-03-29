@@ -2252,10 +2252,6 @@ producers.forEach((p, idx) => {
       <div class="card-overlay-inner">
         <div class="producer-card-genre">${p.genre}</div>
         <div class="producer-card-name">${p.name}</div>
-        <div class="producer-card-stats">
-          <span><strong>${p.credits}</strong> Credits</span>
-          <span><strong>${p.years}</strong> Yrs</span>
-        </div>
         <div class="card-mini-player">
           <button class="card-play-btn" onclick="event.stopPropagation();cardPlayBeat(this,'${p.id}')" data-id="${p.id}">
             <svg width="14" height="14" viewBox="0 0 16 16" fill="currentColor"><path d="M4 3l10 5-10 5z"/></svg>
