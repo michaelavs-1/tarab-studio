@@ -267,25 +267,11 @@ body::after {
 .navbar-links a::after { content:''; position:absolute; bottom:-3px; left:0; width:0; height:1px; background:var(--gold); transition:width 0.28s; }
 .navbar-links a:hover { color: var(--text); }
 .navbar-links a:hover::after { width: 100%; }
+.navbar-links a.nav-active { color: var(--gold); }
+.navbar-links a.nav-active::after { width: 100%; }
 
-/* Mixer CTA button in navbar */
-.nav-mixer-btn {
-  display: flex; align-items: center; gap: 0.5rem;
-  padding: 0.52rem 1.2rem;
-  background: var(--gold); color: var(--bg) !important;
-  border-radius: 30px; font-size: 0.65rem !important;
-  font-weight: 800 !important; letter-spacing: 0.14em !important;
-  text-transform: uppercase; text-decoration: none;
-  transition: background 0.22s, box-shadow 0.22s, transform 0.15s !important;
-  box-shadow: 0 2px 16px rgba(201,162,74,0.3);
-}
-.nav-mixer-btn::after { display: none !important; }
-.nav-mixer-btn:hover {
-  background: var(--gold-bright) !important; color: var(--bg) !important;
-  box-shadow: 0 4px 24px rgba(201,162,74,0.5);
-  transform: translateY(-1px);
-}
-.nav-mixer-btn svg { flex-shrink: 0; }
+/* Mixer nav link — same as other nav links */
+.nav-mixer-btn { display:inline-flex; align-items:center; gap:0.35rem; }
 
 .navbar-menu-btn {
   display: none; background: none; border: 1px solid rgba(201,162,74,0.25);
@@ -307,14 +293,7 @@ body::after {
   transition: color 0.22s;
 }
 .mobile-nav a:hover { color: var(--text); }
-/* Mixer button in mobile menu */
-.mobile-nav .nav-mixer-btn {
-  font-family: inherit; font-size: 0.8rem !important;
-  padding: 0.9rem 3rem; border-radius: 40px;
-  letter-spacing: 0.22em !important;
-  box-shadow: 0 4px 32px rgba(201,162,74,0.35);
-  margin-top: 0.8rem;
-}
+/* Mixer button in mobile menu — inherits from mobile-nav a */
 .mobile-nav-close {
   position: absolute; top: 1.6rem; right: 2rem;
   background: none; border: 1px solid rgba(201,162,74,0.15);
@@ -599,6 +578,7 @@ body::after {
 .beats-back-btn { display:flex; align-items:center; gap:0.4rem; background:none; border:1px solid var(--border); color:var(--text-mid); padding:0.35rem 0.8rem; border-radius:50px; cursor:pointer; font-size:0.75rem; font-weight:600; transition:all 0.2s; }
 .beats-back-btn:hover { border-color:var(--gold); color:var(--gold); }
 .beats-page-title { font-family:'Playfair Display',serif; font-size:1.1rem; font-weight:700; color:var(--text); }
+@media (max-width:480px) { .beats-page-title { display:none; } }
 /* ── Player top ── */
 .beats-player { flex-shrink:0; background:#070503; border-bottom:1px solid #1a1208; padding:1.2rem 1.5rem 1rem; display:flex; flex-direction:column; gap:0.8rem; }
 .bp-track-info { display:flex; flex-direction:column; gap:2px; }
@@ -628,13 +608,13 @@ body::after {
 .beat-row-num { font-size:0.7rem; color:var(--text-dim); width:20px; text-align:right; flex-shrink:0; font-variant-numeric:tabular-nums; }
 .beat-row.is-playing .beat-row-num { color:#1db954; }
 .beat-row-icon { width:30px; height:30px; border-radius:50%; background:var(--surface-2); border:1px solid var(--border); display:flex; align-items:center; justify-content:center; flex-shrink:0; color:var(--gold); transition:all 0.15s; }
-.beat-row.is-playing .beat-row-icon, .beat-row:hover .beat-row-icon { background:#1db954; border-color:#1db954; color:#fff; }
+.beat-row.is-playing .beat-row-icon { background:#1db954; border-color:#1db954; color:#fff; }
 .beat-row-info { flex:1; min-width:0; }
 .beat-row-title { font-size:0.85rem; font-weight:600; color:var(--text); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
 .beat-row-meta { font-size:0.65rem; color:var(--text-dim); margin-top:1px; }
 .beat-row-dur { font-size:0.68rem; color:var(--text-dim); font-variant-numeric:tabular-nums; flex-shrink:0; }
-.nav-beats-btn { display:inline-flex; align-items:center; gap:0.5rem; background:linear-gradient(135deg,var(--surface-2),var(--surface)); border:1px solid var(--border); color:var(--text-mid); padding:0.42rem 1rem; border-radius:50px; cursor:pointer; font-size:0.72rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; transition:all 0.25s; text-decoration:none; }
-.nav-beats-btn:hover { border-color:var(--gold); color:var(--gold); }
+/* Beats nav link — same as other nav links */
+.nav-beats-btn { display:inline-flex; align-items:center; gap:0.35rem; }
 .beats-now-playing { display:none; } /* legacy - hidden */
 
 /* ── PRODUCER GRID ── */
@@ -2009,6 +1989,7 @@ function closeMobileNav() { document.getElementById('mobileNav').classList.remov
 // Smooth nav helpers — work from any page
 function navGoHome() {
   const onHome = document.getElementById('homePage').classList.contains('active');
+  setNavActive('home');
   if (onHome) { window.scrollTo({top: 0, behavior: 'smooth'}); }
   else { showHome(); }
 }
@@ -2016,6 +1997,7 @@ function navScroll(id) {
   const onHome = document.getElementById('homePage').classList.contains('active');
   const target = document.getElementById(id);
   if (!target) return;
+  setNavActive('home');
   if (onHome) {
     target.scrollIntoView({behavior: 'smooth'});
   } else {
@@ -2219,6 +2201,20 @@ const icons = {
 // NAVIGATION
 // ══════════════════════════════════════
 let savedScrollY = 0;
+
+function setNavActive(key) {
+  // key: 'home' | 'beats' | 'mixer' | null
+  document.querySelectorAll('.navbar-links a').forEach(a => a.classList.remove('nav-active'));
+  if (key === 'beats') {
+    document.querySelectorAll('.navbar-links .nav-beats-btn').forEach(a => a.classList.add('nav-active'));
+  } else if (key === 'mixer') {
+    document.querySelectorAll('.navbar-links .nav-mixer-btn').forEach(a => a.classList.add('nav-active'));
+  } else if (key === 'home') {
+    const links = document.querySelectorAll('.navbar-links a');
+    if (links[0]) links[0].classList.add('nav-active'); // Roster
+  }
+}
+
 function showHome() {
   stopAudio();
   if (bpAudio) { bpAudio.pause(); bpAudio = null; bpPlaying = false; }
@@ -2228,6 +2224,7 @@ function showHome() {
   document.getElementById('beatsPage').classList.remove('active');
   requestAnimationFrame(() => window.scrollTo({ top: savedScrollY, behavior: 'instant' }));
   history.pushState({page:'home'}, '', '#');
+  setNavActive('home');
 }
 
 function showMixer() {
@@ -2238,6 +2235,7 @@ function showMixer() {
   document.getElementById('mixerPage').classList.add('active');
   window.scrollTo(0, 0);
   history.pushState({page:'mixer'}, '', '#mixer');
+  setNavActive('mixer');
   mtInit();
   if(mtCtx && mtCtx.state!=='running') mtCtx.resume().catch(()=>{});
 }
@@ -2255,6 +2253,7 @@ function showBeats() {
   document.getElementById('beatsPage').classList.add('active');
   window.scrollTo(0, 0);
   history.pushState({page:'beats'}, '', '#beats');
+  setNavActive('beats');
   bpRender();
 }
 
@@ -2380,13 +2379,30 @@ function bpTick() {
   bpDrawWave(pct);
 }
 
-function bpWaveClick(e) {
+let bpDragging = false;
+function bpSeekToPct(clientX) {
   if (!bpAudio || !bpAudio.duration) return;
   const wrap = document.getElementById('bpWaveWrap');
   const r = wrap.getBoundingClientRect();
-  const pct = (e.clientX - r.left) / r.width;
+  const pct = Math.max(0, Math.min(1, (clientX - r.left) / r.width));
   bpAudio.currentTime = pct * bpAudio.duration;
 }
+function bpWaveClick(e) { bpSeekToPct(e.clientX); }
+
+// Drag seek
+(function() {
+  function onWaveReady() {
+    const wrap = document.getElementById('bpWaveWrap');
+    if (!wrap) { setTimeout(onWaveReady, 300); return; }
+    wrap.addEventListener('mousedown', e => { bpDragging = true; bpSeekToPct(e.clientX); e.preventDefault(); });
+    window.addEventListener('mousemove', e => { if (bpDragging) bpSeekToPct(e.clientX); });
+    window.addEventListener('mouseup', () => { bpDragging = false; });
+    wrap.addEventListener('touchstart', e => { bpDragging = true; bpSeekToPct(e.touches[0].clientX); }, { passive: true });
+    wrap.addEventListener('touchmove', e => { if (bpDragging) bpSeekToPct(e.touches[0].clientX); }, { passive: true });
+    wrap.addEventListener('touchend', () => { bpDragging = false; });
+  }
+  document.addEventListener('DOMContentLoaded', onWaveReady);
+})();
 
 function bpSeekClick(e) {
   if (!bpAudio || !bpAudio.duration) return;
