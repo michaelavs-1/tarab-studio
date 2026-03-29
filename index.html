@@ -3,16 +3,16 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>TARA — Independent Sound, Global Stage</title>
-<meta name="description" content="TARA is a music producer management music representing Israeli-based producers with global sound orientation. We connect unique sonic talent with artists, labels, and projects worldwide.">
-<meta name="keywords" content="music producer management, Israeli producers, global music, hip-hop, electronic, producer music, Tel Aviv, tara">
-<meta property="og:title" content="TARA — Independent Sound, Global Stage">
+<title>GYRO music — Independent Sound, Global Stage</title>
+<meta name="description" content="GYRO music is a music producer management agency representing Israeli-based producers with global sound orientation. We connect unique sonic talent with artists, labels, and projects worldwide.">
+<meta name="keywords" content="music producer management, Israeli producers, global music, hip-hop, electronic, producer music, Tel Aviv, gyro music">
+<meta property="og:title" content="GYRO music — Independent Sound, Global Stage">
 <meta property="og:description" content="We represent Israeli-based producers who carry a production color found nowhere else — the heat of the Middle East, ancient scales, and raw street instinct, fused into a global sound.">
 <meta property="og:type" content="website">
-<meta property="og:url" content="https://tarab-music.netlify.app">
+<meta property="og:url" content="https://gyro-music.netlify.app">
 <meta property="og:image" content="https://dl.dropboxusercontent.com/scl/fi/e47p8rirc8hqar4qfancc/Dabom-Barby-24-2-Square.jpg?rlkey=t0p2a2722xry2w3gsewji8duu">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="canonical" href="https://tarab-music.netlify.app">
+<link rel="canonical" href="https://gyro-music.netlify.app">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Great+Vibes&display=swap" rel="stylesheet">
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
@@ -1290,7 +1290,7 @@ footer span { color: var(--gold); }
       <div class="loader-bar lb4"></div>
       <div class="loader-bar lb5"></div>
     </div>
-    <span class="loader-logo-main">TARA</span>
+    <span class="loader-logo-main">GYRO</span>
     <span class="loader-logo-music">music</span>
   </div>
 </div>
@@ -1461,7 +1461,7 @@ footer span { color: var(--gold); }
       <div class="hero-logo-orn-diamond"></div>
       <div class="hero-logo-orn-line r"></div>
     </div>
-    <h1 class="hero-logo">TARA</h1>
+    <h1 class="hero-logo">GYRO</h1>
     <div class="hero-logo-tag">music</div>
   </div>
   <p class="hero-slogan">Independent Producers. World Stage.</p>
@@ -1512,7 +1512,7 @@ footer span { color: var(--gold); }
       <div class="section-eyebrow">Why We Exist</div>
       <div class="section-rule"></div>
       <h2 class="section-title">Our<br>Mission</h2>
-      <p class="mission-text">TARA represents a new generation of producers who carry a rare combination of cultural depth and technical mastery. Their sound draws from a rich tradition of rhythm, melody, and texture — fused with modern hip-hop, pop, and electronic production. We exist to bring these voices to the global stage.</p>
+      <p class="mission-text">GYRO music represents a new generation of producers who carry a rare combination of cultural depth and technical mastery. Their sound draws from a rich tradition of rhythm, melody, and texture — fused with modern hip-hop, pop, and electronic production. We exist to bring these voices to the global stage.</p>
     </div>
     <div class="reveal">
       <p class="mission-quote">"The world is full of great producers. We find the ones who sound like nowhere else — and take them everywhere."</p>
@@ -1608,9 +1608,9 @@ footer span { color: var(--gold); }
   </form>
 
   <div class="contact-methods reveal" style="margin-top:2.5rem;">
-    <a href="https://instagram.com/tarasound" class="contact-method" target="_blank" rel="noopener">Instagram</a>
-    <a href="https://twitter.com/tarasound" class="contact-method" target="_blank" rel="noopener">Twitter</a>
-    <a href="https://linkedin.com/company/tara" class="contact-method" target="_blank" rel="noopener">LinkedIn</a>
+    <a href="https://instagram.com/gyromusic" class="contact-method" target="_blank" rel="noopener">Instagram</a>
+    <a href="https://twitter.com/gyromusic" class="contact-method" target="_blank" rel="noopener">Twitter</a>
+    <a href="https://linkedin.com/company/gyro-music" class="contact-method" target="_blank" rel="noopener">LinkedIn</a>
   </div>
 </section>
 
@@ -1621,7 +1621,7 @@ footer span { color: var(--gold); }
   </a>
 </div>
 
-<footer>&copy; 2026 <span>TARA</span> &nbsp;&bull;&nbsp; Independent Sound, Global Stage</footer>
+<footer>&copy; 2026 <span>GYRO music</span> &nbsp;&bull;&nbsp; Independent Sound, Global Stage</footer>
 
 </div><!-- end homePage -->
 
@@ -1636,7 +1636,7 @@ footer span { color: var(--gold); }
 
     <!-- Header -->
     <div class="mt-header">
-      <span class="mt-htitle">TARA Studio</span>
+      <span class="mt-htitle">GYRO Studio</span>
       <span class="mt-hline"></span>
       <span class="mt-song-name" id="mtSongName">שיר לדוגמא</span>
       <span class="mt-status" id="mtStatus">Loading stems…</span>
@@ -2791,7 +2791,7 @@ async function bsDownloadMix() {
     const blob=bsBufToWav(rendered);
     const url=URL.createObjectURL(blob);
     const a=document.createElement('a');
-    a.href=url; a.download=`TARA_${bsActiveBeat?bsActiveBeat.name.replace(/\s+/g,'_'):'mix'}.wav`;
+    a.href=url; a.download=`GYRO_${bsActiveBeat?bsActiveBeat.name.replace(/\s+/g,'_'):'mix'}.wav`;
     a.click(); URL.revokeObjectURL(url);
     bsSetStatus('✓ Mix downloaded!');
   } catch(e){bsSetStatus('Error: '+e.message);}
@@ -3282,7 +3282,7 @@ async function mtExportMix() {
     const rendered=await off.startRendering();
     const blob=mtBufToWav(rendered);
     const url=URL.createObjectURL(blob);
-    const a=document.createElement('a'); a.href=url; a.download='TARA_mix.wav'; a.click();
+    const a=document.createElement('a'); a.href=url; a.download="GYRO_mix.wav'; a.click();
     URL.revokeObjectURL(url);
     mtSetStatus('✓ Mix exported!');
   } catch(e){ mtSetStatus('⚠ Export: '+e.message); }
