@@ -1043,39 +1043,137 @@ footer span { color: var(--gold); }
 .mt-tl-fill { height:100%; background:linear-gradient(90deg,var(--accent),var(--gold-bright)); border-radius:2px; width:0%; transition:width 0.05s linear; }
 .mt-tl-head { position:absolute; top:50%; left:0%; transform:translate(-50%,-50%); width:11px; height:11px; border-radius:50%; background:var(--gold-bright); border:2px solid #0a0804; box-shadow:0 0 7px rgba(232,191,98,0.6); }
 
-/* ── Mixer fader strips ── */
-/* ── Professional Mixer ── */
-.mt-mixer { flex-shrink:0; display:flex; flex-direction:row; align-items:stretch; background:linear-gradient(180deg,#06040200 0%,#080604 6%,#070503 100%); border-top:1px solid rgba(201,162,74,0.18); height:260px; overflow-x:auto; overflow-y:hidden; box-shadow:inset 0 6px 24px rgba(0,0,0,0.7); }
-.mt-mixer-ph { display:flex; align-items:center; justify-content:center; flex:1; font-size:0.46rem; color:rgba(60,46,18,0.5); letter-spacing:0.2em; text-transform:uppercase; }
-.mt-ch { min-width:74px; max-width:96px; flex:1; display:flex; flex-direction:column; align-items:center; padding:8px 4px 5px; background:linear-gradient(180deg,#131008 0%,#0d0b07 40%,#0f0d08 100%); border-right:1px solid rgba(35,26,10,0.9); position:relative; gap:0; }
-.mt-ch:first-child { border-left:1px solid rgba(35,26,10,0.9); }
-.mt-ch.vocal-ch { background:linear-gradient(180deg,#150f09 0%,#0e0b07 40%,#100e08 100%); border-left:2px solid rgba(200,121,58,0.4) !important; }
-.mt-ch-num { position:absolute; top:4px; right:5px; font-size:0.33rem; color:rgba(100,78,28,0.45); font-weight:600; letter-spacing:0.04em; pointer-events:none; }
-.mt-ch-lbl { width:100%; text-align:center; font-size:0.44rem; font-weight:800; letter-spacing:0.16em; text-transform:uppercase; color:rgba(201,162,74,0.75); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; padding:0 14px 0 4px; margin-bottom:6px; flex-shrink:0; }
-.mt-ch.vocal-ch .mt-ch-lbl { color:rgba(200,121,58,0.9); }
-/* M/S buttons */
-.mt-ms-row { display:flex; gap:2px; width:100%; margin-bottom:5px; flex-shrink:0; }
-.mt-ms-btn { flex:1; height:17px; font-size:0.42rem; font-weight:900; letter-spacing:0.1em; border-radius:3px; cursor:pointer; transition:all 0.12s; font-family:'Inter',sans-serif; }
-.mt-mute { background:linear-gradient(180deg,#1c1208,#130d06); border:1px solid rgba(55,42,16,0.8); color:rgba(140,110,45,0.5); }
-.mt-mute:hover { border-color:rgba(200,60,50,0.5); color:rgba(220,80,70,0.7); }
-.mt-mute.active { background:linear-gradient(180deg,#c0392b,#8e2218); border-color:#e74c3c; color:#fff; box-shadow:0 0 8px rgba(231,76,60,0.5),inset 0 1px 0 rgba(255,180,180,0.15); }
-.mt-solo { background:linear-gradient(180deg,#1c1208,#130d06); border:1px solid rgba(55,42,16,0.8); color:rgba(140,110,45,0.5); }
-.mt-solo:hover { border-color:rgba(220,175,40,0.5); color:rgba(220,175,40,0.7); }
-.mt-solo.active { background:linear-gradient(180deg,#c8940a,#9a7008); border-color:#f0c040; color:#fff9e6; box-shadow:0 0 10px rgba(240,192,64,0.55),inset 0 1px 0 rgba(255,240,140,0.2); }
-/* Fader section */
+/* ══════════════════════════════════════════
+   REALISTIC HARDWARE MIXER
+══════════════════════════════════════════ */
+.mt-mixer {
+  flex-shrink:0; display:flex; flex-direction:row; align-items:stretch;
+  height:300px; overflow-x:auto; overflow-y:hidden;
+  background:
+    repeating-linear-gradient(90deg,rgba(255,255,255,0.012) 0px,rgba(255,255,255,0.012) 1px,transparent 1px,transparent 18px),
+    linear-gradient(180deg,#111008 0%,#0b0908 100%);
+  border-top:2px solid rgba(201,162,74,0.22);
+  box-shadow:inset 0 8px 32px rgba(0,0,0,0.8), 0 -1px 0 rgba(0,0,0,0.9);
+}
+.mt-mixer-ph { display:flex; align-items:center; justify-content:center; flex:1; font-size:0.46rem; color:rgba(60,46,18,0.4); letter-spacing:0.2em; text-transform:uppercase; }
+
+/* Channel strip — looks like a raised panel */
+.mt-ch {
+  min-width:76px; max-width:98px; flex:1;
+  display:flex; flex-direction:column; align-items:center;
+  padding:8px 5px 0; gap:0; position:relative;
+  background:linear-gradient(180deg,#181410 0%,#131008 15%,#0f0d09 85%,#131008 100%);
+  border-right:1px solid rgba(0,0,0,0.9);
+  border-left:1px solid rgba(255,255,255,0.04);
+  box-shadow:inset 1px 0 0 rgba(255,255,255,0.03);
+}
+.mt-ch.vocal-ch { background:linear-gradient(180deg,#1a1410 0%,#140f0a 15%,#100e09 85%,#140f0a 100%); border-top:3px solid rgba(200,121,58,0.5); }
+
+/* Channel number badge */
+.mt-ch-num {
+  position:absolute; top:5px; right:6px;
+  font-size:0.32rem; font-weight:700; letter-spacing:0.04em;
+  color:rgba(201,162,74,0.3); pointer-events:none;
+}
+
+/* Pan knob section */
+.mt-pan-wrap { display:flex; flex-direction:column; align-items:center; gap:2px; margin-bottom:7px; flex-shrink:0; }
+.mt-pan-knob {
+  width:24px; height:24px; border-radius:50%; cursor:pointer;
+  background:radial-gradient(circle at 38% 32%, #2e2418 0%, #181009 60%, #0c0806 100%);
+  border:1px solid rgba(80,62,22,0.7);
+  box-shadow:0 3px 8px rgba(0,0,0,0.85), 0 1px 2px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.07), inset 0 -1px 0 rgba(0,0,0,0.5);
+  position:relative;
+}
+.mt-pan-dot { position:absolute; width:3px; height:3px; border-radius:50%; background:rgba(201,162,74,0.85); top:3px; left:50%; transform:translateX(-50%); box-shadow:0 0 4px rgba(201,162,74,0.5); }
+.mt-pan-lbl { font-size:0.29rem; font-weight:700; letter-spacing:0.1em; color:rgba(90,70,25,0.5); text-transform:uppercase; }
+
+/* Fader slot */
 .mt-fader-rail-wrap { flex:1; display:flex; flex-direction:column; align-items:center; width:100%; position:relative; min-height:0; }
-.mt-fader-rail { position:absolute; top:10px; bottom:10px; left:50%; transform:translateX(-50%); width:5px; background:linear-gradient(180deg,#080604 0%,#181208 40%,#0c0a06 100%); border-radius:3px; pointer-events:none; border:1px solid rgba(201,162,74,0.07); box-shadow:inset 0 1px 8px rgba(0,0,0,0.9),0 0 0 1px rgba(0,0,0,0.6); }
-.mt-fader-ticks { position:absolute; right:calc(50% + 9px); top:10px; bottom:10px; display:flex; flex-direction:column; justify-content:space-between; pointer-events:none; }
-.mt-fader-ticks span { width:4px; height:1px; background:rgba(90,70,25,0.4); display:block; border-radius:1px; }
-.mt-fader-ticks span:nth-child(4) { width:7px; background:rgba(130,100,35,0.65); }
-.mt-vu { position:absolute; right:4px; top:10px; bottom:10px; width:10px; pointer-events:none; border-radius:2px; background:rgba(0,0,0,0.5); box-shadow:inset 0 0 4px rgba(0,0,0,0.8); }
-.mt-vfader { -webkit-appearance:slider-vertical; writing-mode:vertical-lr; direction:rtl; width:36px; height:calc(100% - 12px); background:transparent; outline:none; cursor:pointer; position:relative; z-index:2; opacity:0; }
-.mt-fader-cap { position:absolute; left:50%; transform:translateX(-50%); width:44px; height:16px; border-radius:3px; background:linear-gradient(180deg,#f2da88 0%,#d8b84e 18%,#b89230 48%,#caa83c 54%,#a07828 74%,#d2b64e 88%,#eedд76 100%); background:linear-gradient(180deg,#f0d878 0%,#d4ae48 20%,#b08830 50%,#c8a23a 55%,#9c7424 76%,#d0b24a 90%,#ead070 100%); border:1px solid rgba(201,162,74,0.45); pointer-events:none; box-shadow:0 4px 12px rgba(0,0,0,0.95),0 1px 3px rgba(0,0,0,0.7),inset 0 1px 0 rgba(255,255,255,0.35),inset 0 -1px 0 rgba(0,0,0,0.4); }
-.mt-fader-cap::before { content:''; position:absolute; top:50%; left:8px; right:8px; height:2px; background:rgba(0,0,0,0.22); transform:translateY(-50%); border-radius:1px; }
-.mt-fader-cap::after { content:''; position:absolute; top:calc(50% - 4px); left:8px; right:8px; height:2px; background:rgba(0,0,0,0.12); border-radius:1px; }
-.mt-fader-cap.voc-cap { background:linear-gradient(180deg,#f0a870 0%,#d07840 20%,#a85420 50%,#c06830 55%,#904418 76%,#cc7440 90%,#e89060 100%); border-color:rgba(200,121,58,0.55); }
-.mt-ch-val { font-size:0.40rem; font-weight:600; font-variant-numeric:tabular-nums; color:rgba(160,128,52,0.65); flex-shrink:0; margin-top:3px; letter-spacing:0.04em; }
-.mt-ch.vocal-ch .mt-ch-val { color:rgba(200,121,58,0.7); }
+.mt-fader-rail {
+  position:absolute; top:8px; bottom:8px; left:50%; transform:translateX(-50%);
+  width:6px; border-radius:3px; pointer-events:none;
+  background:linear-gradient(180deg,#060403 0%,#0e0b06 30%,#060403 100%);
+  border:1px solid rgba(0,0,0,0.95);
+  box-shadow:inset 0 2px 12px rgba(0,0,0,1), 0 0 0 1px rgba(201,162,74,0.06);
+}
+/* dB scale ticks */
+.mt-fader-ticks { position:absolute; right:calc(50% + 10px); top:8px; bottom:8px; display:flex; flex-direction:column; justify-content:space-between; pointer-events:none; }
+.mt-fader-ticks span { display:block; height:1px; border-radius:1px; background:rgba(100,78,28,0.35); }
+.mt-fader-ticks span:nth-child(1),.mt-fader-ticks span:nth-child(7) { width:7px; background:rgba(130,100,35,0.5); }
+.mt-fader-ticks span:nth-child(2),.mt-fader-ticks span:nth-child(3),.mt-fader-ticks span:nth-child(5),.mt-fader-ticks span:nth-child(6) { width:4px; }
+.mt-fader-ticks span:nth-child(4) { width:9px; background:rgba(201,162,74,0.7); } /* 0dB */
+
+/* VU meter */
+.mt-vu { position:absolute; right:4px; top:8px; bottom:8px; width:10px; pointer-events:none; border-radius:2px; background:#050403; box-shadow:inset 0 0 6px rgba(0,0,0,0.9), 0 0 0 1px rgba(0,0,0,0.6); }
+
+/* Invisible range input (hit target) */
+.mt-vfader { -webkit-appearance:slider-vertical; writing-mode:vertical-lr; direction:rtl; width:38px; height:calc(100% - 14px); background:transparent; outline:none; cursor:grab; position:relative; z-index:2; opacity:0; }
+.mt-vfader:active { cursor:grabbing; }
+
+/* Fader cap — 3D hardware look */
+.mt-fader-cap {
+  position:absolute; left:50%; transform:translateX(-50%);
+  width:46px; height:18px; border-radius:3px; pointer-events:none;
+  background:linear-gradient(180deg,
+    #e8d06a 0%, #c8a83e 12%,
+    #a88020 28%, #987218 42%,
+    #b89030 58%, #c8a03a 72%,
+    #a07020 85%, #c4a040 100%);
+  border-top:1px solid rgba(255,230,120,0.5);
+  border-bottom:1px solid rgba(0,0,0,0.7);
+  border-left:1px solid rgba(180,140,40,0.4);
+  border-right:1px solid rgba(180,140,40,0.4);
+  box-shadow:0 5px 15px rgba(0,0,0,0.95), 0 2px 4px rgba(0,0,0,0.8), inset 0 1px 0 rgba(255,255,200,0.4);
+}
+.mt-fader-cap::before { content:''; position:absolute; top:5px; left:7px; right:7px; height:2px; background:rgba(0,0,0,0.3); border-radius:1px; }
+.mt-fader-cap::after  { content:''; position:absolute; top:10px; left:7px; right:7px; height:2px; background:rgba(0,0,0,0.2); border-radius:1px; }
+.mt-fader-cap.voc-cap {
+  background:linear-gradient(180deg,#e09858 0%,#c07030 12%,#a05018 28%,#904010 42%,#b06028 58%,#c07030 72%,#9a4810 85%,#be7030 100%);
+  border-top-color:rgba(255,180,100,0.4); border-bottom-color:rgba(0,0,0,0.7);
+}
+
+/* Mute + Solo LED buttons */
+.mt-ms-row { display:flex; gap:5px; justify-content:center; align-items:center; flex-shrink:0; padding:6px 0 5px; width:100%; }
+.mt-ms-btn {
+  width:26px; height:26px; border-radius:50%; cursor:pointer;
+  display:flex; align-items:center; justify-content:center;
+  font-size:0.40rem; font-weight:900; letter-spacing:0.05em;
+  font-family:'Inter',sans-serif; transition:all 0.1s;
+  position:relative;
+}
+.mt-mute {
+  background:radial-gradient(circle at 40% 35%, #1e1509, #0c0905);
+  border:1px solid rgba(60,46,18,0.8);
+  color:rgba(100,78,28,0.4);
+  box-shadow:0 3px 6px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05), inset 0 -1px 0 rgba(0,0,0,0.4);
+}
+.mt-mute:hover { color:rgba(220,80,70,0.5); border-color:rgba(200,60,50,0.4); }
+.mt-mute.active {
+  background:radial-gradient(circle at 40% 35%, #f04040, #b01818);
+  border:1px solid rgba(255,80,80,0.5);
+  color:#fff;
+  box-shadow:0 0 14px rgba(240,60,60,0.7), 0 0 4px rgba(255,120,120,0.5), inset 0 1px 0 rgba(255,200,200,0.2), inset 0 -1px 0 rgba(0,0,0,0.3);
+}
+.mt-solo {
+  background:radial-gradient(circle at 40% 35%, #1e1509, #0c0905);
+  border:1px solid rgba(60,46,18,0.8);
+  color:rgba(100,78,28,0.4);
+  box-shadow:0 3px 6px rgba(0,0,0,0.7), inset 0 1px 0 rgba(255,255,255,0.05), inset 0 -1px 0 rgba(0,0,0,0.4);
+}
+.mt-solo:hover { color:rgba(220,175,40,0.5); border-color:rgba(200,160,30,0.4); }
+.mt-solo.active {
+  background:radial-gradient(circle at 40% 35%, #f0c020, #b08800);
+  border:1px solid rgba(255,210,60,0.5);
+  color:#1a1000;
+  box-shadow:0 0 14px rgba(240,192,32,0.75), 0 0 4px rgba(255,220,80,0.5), inset 0 1px 0 rgba(255,250,180,0.3), inset 0 -1px 0 rgba(0,0,0,0.2);
+}
+
+/* Channel footer */
+.mt-ch-footer { width:100%; flex-shrink:0; background:rgba(0,0,0,0.45); border-top:1px solid rgba(0,0,0,0.7); padding:4px 3px 5px; text-align:center; }
+.mt-ch-lbl { font-size:0.42rem; font-weight:800; letter-spacing:0.14em; text-transform:uppercase; color:rgba(201,162,74,0.72); white-space:nowrap; overflow:hidden; text-overflow:ellipsis; display:block; }
+.mt-ch.vocal-ch .mt-ch-lbl { color:rgba(200,121,58,0.9); }
+.mt-ch-val { font-size:0.34rem; font-weight:600; font-variant-numeric:tabular-nums; color:rgba(130,100,38,0.5); display:block; margin-top:1px; letter-spacing:0.04em; }
 
 /* ── Bottom bar ── */
 .mt-bottom-bar { flex-shrink:0; height:50px; display:flex; align-items:center; gap:0.8rem; padding:0 1rem; background:#0d0a05; border-top:1px solid rgba(35,26,10,0.9); }
@@ -2907,19 +3005,25 @@ function mtRenderMixer() {
     strip.className='mt-ch'+(ch.isVocal?' vocal-ch':'');
     strip.innerHTML=`
       <span class="mt-ch-num">${i+1}</span>
-      <span class="mt-ch-lbl" title="${ch.name}">${ch.name}</span>
-      <div class="mt-ms-row">
-        <button class="mt-ms-btn mt-mute" id="mtMute_${i}" title="Mute">M</button>
-        <button class="mt-ms-btn mt-solo" id="mtSolo_${i}" title="Solo">S</button>
+      <div class="mt-pan-wrap">
+        <div class="mt-pan-knob"><div class="mt-pan-dot"></div></div>
+        <span class="mt-pan-lbl">PAN</span>
       </div>
       <div class="mt-fader-rail-wrap">
         <div class="mt-fader-rail"></div>
         <div class="mt-fader-ticks"><span></span><span></span><span></span><span></span><span></span><span></span><span></span></div>
         <input type="range" class="mt-vfader" id="mtFader_${i}" min="0" max="1.5" step="0.01" value="1">
         <div class="mt-fader-cap${ch.isVocal?' voc-cap':''}" id="mtCap_${i}"></div>
-        <canvas class="mt-vu" id="mtVu_${i}" width="8" height="120"></canvas>
+        <canvas class="mt-vu" id="mtVu_${i}" width="10" height="120"></canvas>
       </div>
-      <span class="mt-ch-val" id="mtVal_${i}">100%</span>`;
+      <div class="mt-ms-row">
+        <button class="mt-ms-btn mt-mute" id="mtMute_${i}" title="Mute">M</button>
+        <button class="mt-ms-btn mt-solo" id="mtSolo_${i}" title="Solo">S</button>
+      </div>
+      <div class="mt-ch-footer">
+        <span class="mt-ch-lbl" title="${ch.name}">${ch.name}</span>
+        <span class="mt-ch-val" id="mtVal_${i}">100%</span>
+      </div>`;
     strip.querySelector('.mt-vfader').addEventListener('input',e=>{
       ch.volume=+e.target.value;
       document.getElementById(`mtVal_${i}`).textContent=Math.round(ch.volume*100)+'%';
