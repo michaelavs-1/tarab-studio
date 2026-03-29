@@ -271,7 +271,6 @@ body::after {
 .navbar-links a.nav-active::after { width: 100%; }
 
 /* Mixer nav link — same as other nav links */
-.nav-mixer-btn { display:inline-flex; align-items:center; gap:0.35rem; }
 
 .navbar-menu-btn {
   display: none; background: none; border: 1px solid rgba(201,162,74,0.25);
@@ -614,7 +613,6 @@ body::after {
 .beat-row-meta { font-size:0.65rem; color:var(--text-dim); margin-top:1px; }
 .beat-row-dur { font-size:0.68rem; color:var(--text-dim); font-variant-numeric:tabular-nums; flex-shrink:0; }
 /* Beats nav link — same as other nav links */
-.nav-beats-btn { display:inline-flex; align-items:center; gap:0.35rem; }
 .beats-now-playing { display:none; } /* legacy - hidden */
 
 /* ── PRODUCER GRID ── */
@@ -1340,14 +1338,8 @@ footer span { color: var(--gold); }
     <a href="#" onclick="navScroll('mission'); return false;">About</a>
     <a href="#" onclick="navScroll('process'); return false;">How It Works</a>
     <a href="#" onclick="navScroll('contact'); return false;">Contact</a>
-    <a href="#" class="nav-beats-btn" onclick="showBeats(); return false;">
-      <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z"/></svg>
-      Beats
-    </a>
-    <a href="#" class="nav-mixer-btn" onclick="showMixer(); return false;">
-      <svg width="11" height="11" viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="2" width="2" height="12" rx="1"/><rect x="7" y="5" width="2" height="9" rx="1"/><rect x="12" y="1" width="2" height="13" rx="1"/><rect x="1" y="9" width="4" height="1.5" rx="0.75" fill="currentColor" opacity="0.7"/><rect x="6" y="6" width="4" height="1.5" rx="0.75" fill="currentColor" opacity="0.7"/><rect x="11" y="11" width="4" height="1.5" rx="0.75" fill="currentColor" opacity="0.7"/></svg>
-      Mix it!
-    </a>
+    <a href="#" class="nav-beats-btn" onclick="showBeats(); return false;">Beats</a>
+    <a href="#" class="nav-mixer-btn" onclick="showMixer(); return false;">Mix it!</a>
   </div>
   <button class="navbar-menu-btn" id="menuBtn" aria-label="Menu">
     <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="0" y1="1" x2="18" y2="1"/><line x1="0" y1="7" x2="18" y2="7"/><line x1="0" y1="13" x2="18" y2="13"/></svg>
@@ -1361,14 +1353,8 @@ footer span { color: var(--gold); }
   <a href="#" onclick="closeMobileNav(); navScroll('mission'); return false;">About</a>
   <a href="#" onclick="closeMobileNav(); navScroll('process'); return false;">How It Works</a>
   <a href="#" onclick="closeMobileNav(); navScroll('contact'); return false;">Contact</a>
-  <a href="#" class="nav-beats-btn" onclick="closeMobileNav(); showBeats(); return false;">
-    <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z"/></svg>
-    Beats
-  </a>
-  <a href="#" class="nav-mixer-btn" onclick="closeMobileNav(); showMixer(); return false;">
-    <svg width="13" height="13" viewBox="0 0 16 16" fill="currentColor"><rect x="2" y="2" width="2" height="12" rx="1"/><rect x="7" y="5" width="2" height="9" rx="1"/><rect x="12" y="1" width="2" height="13" rx="1"/></svg>
-    Mix it!
-  </a>
+  <a href="#" class="nav-beats-btn" onclick="closeMobileNav(); showBeats(); return false;">Beats</a>
+  <a href="#" class="nav-mixer-btn" onclick="closeMobileNav(); showMixer(); return false;">Mix it!</a>
 </div>
 
 <!-- ═══════════ HOME PAGE ═══════════ -->
