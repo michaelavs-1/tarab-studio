@@ -2339,6 +2339,30 @@ function bpFmt(s) {
   return m + ':' + (sec < 10 ? '0' : '') + sec;
 }
 
+function bpPlayDirect(btn) {
+  const url = btn.dataset.url;
+  const title = btn.dataset.title;
+  const producer = btn.dataset.producer;
+  if (!url) return;
+  if (bpAudio) { bpAudio.pause(); bpAudio.src = ''; }
+  bpAudio = new Audio(url);
+  bpPlaying = true;
+  bpAudio.play().catch(()=>{});
+  // Show now playing bar at top of beats page (reuse) or in producer page
+  const bnp = document.getElementById('beatsNowPlaying');
+  if (bnp) {
+    bnp.style.display = 'flex';
+    document.getElementById('bnpProducer').textContent = producer;
+    document.getElementById('bnpTitle').textContent = title;
+    document.getElementById('bnpIconPlay').style.display = 'none';
+    document.getElementById('bnpIconPause').style.display = '';
+  }
+  bpAudio.ontimeupdate = bpUpdateProgress;
+  bpAudio.onloadedmetadata = () => {
+    if (document.getElementById('bnpDur')) document.getElementById('bnpDur').textContent = bpFmt(bpAudio.duration);
+  };
+}
+
 function showProducer(id) {
   stopAudio();
   const p = producers.find(x => x.id === id);
@@ -2359,14 +2383,18 @@ function showProducer(id) {
   if (p.workedOn) extra += `<div class="detail-section"><h3 class="detail-section-title">Notable Releases</h3><div class="tags-list">${p.workedOn.map(w=>`<span class="tag">${w}</span>`).join('')}</div></div>`;
   if (p.internationalCollabs) extra += `<div class="detail-section"><h3 class="detail-section-title">International Collaborations</h3><div class="tags-list">${p.internationalCollabs.map(c=>`<span class="tag">${c}</span>`).join('')}</div></div>`;
 
-  const beatsHtml = p.beats.map((b,i) => `
-    <div class="beat-item">
-      <button class="beat-play-btn" data-pidx="${id}" data-bidx="${i}">${icons.play}</button>
-      <div class="beat-info"><div class="beat-title">${b.title}</div><div class="beat-meta">${b.bpm} BPM &middot; ${b.key}</div></div>
+  const beatsHtml = p.beats.map((b,i) => {
+    const meta = [b.bpm ? b.bpm+' BPM' : '', b.key || '', b.duration || ''].filter(Boolean).join(' · ');
+    const playBtn = b.url
+      ? `<button class="beat-play-btn" data-url="${b.url}" data-title="${b.title}" data-producer="${p.name}" onclick="event.stopPropagation();bpPlayDirect(this)">${icons.play}</button>`
+      : `<button class="beat-play-btn" data-pidx="${id}" data-bidx="${i}">${icons.play}</button>`;
+    return `<div class="beat-item">
+      ${playBtn}
+      <div class="beat-info"><div class="beat-title">${b.title}</div><div class="beat-meta">${meta}</div></div>
       <div class="beat-progress-container"><div class="beat-progress" id="prog-${id}-${i}"></div></div>
-      <span class="beat-duration">${b.duration}</span>
-    </div>
-  `).join('');
+      <span class="beat-duration">${b.duration||''}</span>
+    </div>`;
+  }).join('');
 
   detail.innerHTML = `
     <a class="back-btn" href="#" onclick="showHome(); return false;">${icons.back} Back to Roster</a>
