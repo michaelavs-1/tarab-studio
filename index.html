@@ -1667,7 +1667,7 @@ footer span { color: var(--gold); }
 
     <!-- Mixer channel strips -->
     <div class="mt-mixer" id="mtMixer">
-      <div class="mt-mixer-ph" id="mtMixerPh">—</div>
+      <div class="mt-mixer-ph" id="mtMixerPh">...</div>
     </div>
 
     <!-- Bottom toolbar: Record + Load + Export -->
@@ -2482,7 +2482,7 @@ async function bsSelectBeat(beat) {
     document.getElementById('bsPlayerReady').style.display='';
     bsDrawBeatWave();
     bsUpdateTimeline(0);
-    bsSetStatus(`${beat.name}${beat.bpm?' · '+beat.bpm+' BPM':''} — Ready`);
+    bsSetStatus(`${beat.name}${beat.bpm?' · '+beat.bpm+' BPM':''} Ready`);
   } catch(err) {
     document.getElementById('bsPlayerLoading').style.display='none';
     document.getElementById('bsPlayerEmpty').style.display='flex';
