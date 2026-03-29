@@ -922,6 +922,8 @@ footer span { color: var(--gold); }
   .section { padding: 5rem 1.5rem; }
   .navbar { padding: 1rem 1.5rem; }
   .navbar.scrolled { padding: 0.7rem 1.5rem; }
+  /* Hide main navbar on beats/mixer pages — they have their own header */
+  body.beats-open .navbar, body.mixer-open .navbar { display: none; }
 }
 ::-webkit-scrollbar { width: 4px; }
 ::-webkit-scrollbar-track { background: var(--bg); }
@@ -2219,6 +2221,7 @@ function showHome() {
   document.getElementById('producerPage').classList.remove('active');
   document.getElementById('mixerPage').classList.remove('active');
   document.getElementById('beatsPage').classList.remove('active');
+  document.body.classList.remove('beats-open', 'mixer-open');
   requestAnimationFrame(() => window.scrollTo({ top: savedScrollY, behavior: 'instant' }));
   history.pushState({page:'home'}, '', '#');
   setNavActive('home');
@@ -2230,6 +2233,8 @@ function showMixer() {
   document.getElementById('producerPage').classList.remove('active');
   document.getElementById('beatsPage').classList.remove('active');
   document.getElementById('mixerPage').classList.add('active');
+  document.body.classList.remove('beats-open');
+  document.body.classList.add('mixer-open');
   window.scrollTo(0, 0);
   history.pushState({page:'mixer'}, '', '#mixer');
   setNavActive('mixer');
@@ -2248,6 +2253,8 @@ function showBeats() {
   document.getElementById('producerPage').classList.remove('active');
   document.getElementById('mixerPage').classList.remove('active');
   document.getElementById('beatsPage').classList.add('active');
+  document.body.classList.remove('mixer-open');
+  document.body.classList.add('beats-open');
   window.scrollTo(0, 0);
   history.pushState({page:'beats'}, '', '#beats');
   setNavActive('beats');
