@@ -1245,12 +1245,18 @@ footer span { color: var(--gold); }
   .mobile-bottom-nav {
     display:flex; position:fixed; bottom:0; left:0; right:0; z-index:800;
     background:rgba(12,8,4,0.97); backdrop-filter:blur(20px);
-    border-top:1px solid var(--border); padding:0.4rem 0 calc(0.4rem + env(safe-area-inset-bottom));
-    justify-content:space-around; align-items:center;
+    border-top:1px solid var(--border); padding:0.4rem 0.8rem calc(0.4rem + env(safe-area-inset-bottom));
+    align-items:center; gap:0;
   }
-  .mbn-item { display:flex; flex-direction:column; align-items:center; gap:2px; color:var(--text-dim); text-decoration:none; font-size:0.42rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:0.2rem 0.4rem; transition:color 0.18s; min-width:44px; }
+  /* Regular items fill left side */
+  .mbn-item { display:flex; flex-direction:column; align-items:center; gap:2px; color:var(--text-dim); text-decoration:none; font-size:0.42rem; font-weight:700; letter-spacing:0.08em; text-transform:uppercase; padding:0.2rem 0.5rem; transition:color 0.18s; flex:1; }
   .mbn-item:hover, .mbn-item.active { color:var(--gold); }
-  .mbn-center { color:var(--gold); background:rgba(201,162,74,0.08); border-radius:12px; border:1px solid rgba(201,162,74,0.2); padding:0.35rem 0.6rem; }
+  /* CTA group — Beats + Mix it! grouped on the right */
+  .mbn-cta-group { display:flex; align-items:center; gap:0; margin-left:auto; background:rgba(201,162,74,0.06); border:1px solid rgba(201,162,74,0.22); border-radius:14px; overflow:hidden; flex-shrink:0; }
+  .mbn-cta { display:flex; flex-direction:column; align-items:center; gap:2px; color:var(--gold); text-decoration:none; font-size:0.44rem; font-weight:800; letter-spacing:0.1em; text-transform:uppercase; padding:0.35rem 0.75rem; transition:background 0.18s, color 0.18s; white-space:nowrap; }
+  .mbn-cta + .mbn-cta { border-left:1px solid rgba(201,162,74,0.18); }
+  .mbn-cta:hover { background:rgba(201,162,74,0.1); }
+  .mbn-cta.active { background:rgba(201,162,74,0.18); color:#e8bf62; }
   body { padding-bottom: 68px; }
 }
 
@@ -2189,7 +2195,7 @@ const icons = {
 let savedScrollY = 0;
 
 function setNavActive(key) {
-  // key: 'home' | 'beats' | 'mixer' | null
+  // Top navbar
   document.querySelectorAll('.navbar-links a').forEach(a => a.classList.remove('nav-active'));
   if (key === 'beats') {
     document.querySelectorAll('.navbar-links .nav-beats-btn').forEach(a => a.classList.add('nav-active'));
@@ -2197,8 +2203,13 @@ function setNavActive(key) {
     document.querySelectorAll('.navbar-links .nav-mixer-btn').forEach(a => a.classList.add('nav-active'));
   } else if (key === 'home') {
     const links = document.querySelectorAll('.navbar-links a');
-    if (links[0]) links[0].classList.add('nav-active'); // Roster
+    if (links[0]) links[0].classList.add('nav-active');
   }
+  // Bottom nav CTA group
+  const mbnBeats = document.getElementById('mbnBeats');
+  const mbnMixer = document.getElementById('mbnMixer');
+  if (mbnBeats) mbnBeats.classList.toggle('active', key === 'beats');
+  if (mbnMixer) mbnMixer.classList.toggle('active', key === 'mixer');
 }
 
 function showHome() {
@@ -3685,7 +3696,7 @@ function cardPlayBeat(btn, producerId) {
 </script>
 
 <nav class="mobile-bottom-nav" id="mobileBottomNav">
-  <a href="#" onclick="navGoHome();return false;" class="mbn-item">
+  <a href="#" onclick="navGoHome();return false;" class="mbn-item" id="mbnRoster">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="8" r="4"/><path d="M4 20c0-4 3.6-7 8-7s8 3 8 7"/></svg>
     <span>Roster</span>
   </a>
@@ -3693,22 +3704,25 @@ function cardPlayBeat(btn, producerId) {
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="12"/><circle cx="12" cy="16" r="0.5" fill="currentColor"/></svg>
     <span>About</span>
   </a>
-  <a href="#" onclick="showMixer();return false;" class="mbn-item mbn-center">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="3" height="18" rx="1.5"/><rect x="10" y="7" width="3" height="14" rx="1.5"/><rect x="17" y="1" width="3" height="20" rx="1.5"/></svg>
-    <span>Mixer</span>
-  </a>
   <a href="#" onclick="navScroll('process');return false;" class="mbn-item">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
     <span>Process</span>
-  </a>
-  <a href="#" onclick="showBeats();return false;" class="mbn-item">
-    <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z"/></svg>
-    <span>Beats</span>
   </a>
   <a href="#" onclick="navScroll('contact');return false;" class="mbn-item">
     <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
     <span>Contact</span>
   </a>
+  <!-- CTA group: Beats + Mix it! -->
+  <div class="mbn-cta-group">
+    <a href="#" onclick="showBeats();return false;" class="mbn-cta" id="mbnBeats">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><path d="M12 3v10.55A4 4 0 1 0 14 17V7h4V3z"/></svg>
+      <span>Beats</span>
+    </a>
+    <a href="#" onclick="showMixer();return false;" class="mbn-cta" id="mbnMixer">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><rect x="3" y="3" width="3" height="18" rx="1.5"/><rect x="10" y="7" width="3" height="14" rx="1.5"/><rect x="17" y="1" width="3" height="20" rx="1.5"/></svg>
+      <span>Mix it!</span>
+    </a>
+  </div>
 </nav>
 
 </body>
