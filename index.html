@@ -176,13 +176,48 @@ body::after {
 }
 
 /* ── AMBIENT ORBS ── */
-.orb { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; filter: blur(100px); }
-.orb-1 { width: 600px; height: 600px; top: -200px; right: -150px; background: radial-gradient(circle, rgba(200,121,58,0.10) 0%, transparent 70%); animation: orbDrift1 25s ease-in-out infinite; }
-.orb-2 { width: 500px; height: 500px; bottom: 5%; left: -150px; background: radial-gradient(circle, rgba(160,80,20,0.08) 0%, transparent 70%); animation: orbDrift2 30s ease-in-out infinite; }
-.orb-3 { width: 350px; height: 350px; top: 40%; right: -80px; background: radial-gradient(circle, rgba(201,162,74,0.06) 0%, transparent 70%); animation: orbDrift3 38s ease-in-out infinite; }
-@keyframes orbDrift1 { 0%,100%{transform:translate(0,0);} 50%{transform:translate(-80px,50px);} }
-@keyframes orbDrift2 { 0%,100%{transform:translate(0,0);} 50%{transform:translate(55px,-65px);} }
-@keyframes orbDrift3 { 0%,100%{transform:translate(0,0);} 50%{transform:translate(-35px,70px);} }
+/* ── GLOBAL AMBIENT ORBS (fixed — visible throughout entire scroll) ── */
+.orb { position: fixed; border-radius: 50%; pointer-events: none; z-index: 0; }
+/* Large warm orb — top right */
+.orb-1 {
+  width: 700px; height: 700px; top: -10vh; right: -10vw;
+  background: radial-gradient(circle, rgba(200,121,58,0.13) 0%, transparent 65%);
+  filter: blur(90px);
+  animation: orbDrift1 22s ease-in-out infinite;
+}
+/* Large deep amber — lower left */
+.orb-2 {
+  width: 650px; height: 650px; bottom: 5vh; left: -12vw;
+  background: radial-gradient(circle, rgba(160,80,20,0.11) 0%, transparent 65%);
+  filter: blur(100px);
+  animation: orbDrift2 28s ease-in-out infinite;
+}
+/* Mid gold — centre right */
+.orb-3 {
+  width: 420px; height: 420px; top: 35vh; right: -8vw;
+  background: radial-gradient(circle, rgba(201,162,74,0.09) 0%, transparent 65%);
+  filter: blur(80px);
+  animation: orbDrift3 35s ease-in-out infinite;
+}
+/* Extra: warm orb — centre left */
+.orb-4 {
+  width: 500px; height: 500px; top: 50vh; left: -10vw;
+  background: radial-gradient(circle, rgba(200,100,30,0.08) 0%, transparent 65%);
+  filter: blur(110px);
+  animation: orbDrift4 42s ease-in-out infinite;
+}
+/* Extra: gold — very bottom right */
+.orb-5 {
+  width: 380px; height: 380px; bottom: 20vh; right: 5vw;
+  background: radial-gradient(circle, rgba(201,162,74,0.07) 0%, transparent 65%);
+  filter: blur(80px);
+  animation: orbDrift5 31s ease-in-out infinite 6s;
+}
+@keyframes orbDrift1 { 0%,100%{transform:translate(0,0) scale(1);} 33%{transform:translate(-70px,60px) scale(1.06);} 66%{transform:translate(40px,-40px) scale(0.96);} }
+@keyframes orbDrift2 { 0%,100%{transform:translate(0,0) scale(1);} 40%{transform:translate(65px,-55px) scale(1.05);} 80%{transform:translate(-30px,35px) scale(0.97);} }
+@keyframes orbDrift3 { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(-45px,70px) scale(1.04);} }
+@keyframes orbDrift4 { 0%,100%{transform:translate(0,0) scale(1);} 45%{transform:translate(55px,-45px) scale(1.07);} 90%{transform:translate(-25px,30px) scale(0.94);} }
+@keyframes orbDrift5 { 0%,100%{transform:translate(0,0) scale(1);} 50%{transform:translate(-60px,-50px) scale(1.05);} }
 
 /* ── NAVBAR ── */
 .navbar {
@@ -1373,6 +1408,8 @@ footer span { color: var(--gold); }
 <div class="orb orb-1"></div>
 <div class="orb orb-2"></div>
 <div class="orb orb-3"></div>
+<div class="orb orb-4"></div>
+<div class="orb orb-5"></div>
 
 <nav class="navbar" id="navbar">
   <div class="navbar-logo" onclick="showHome()">
