@@ -340,7 +340,7 @@ body::after {
 .cube-back { position:absolute; top:1.5rem; left:2rem; background:none;
   border:1px solid rgba(201,162,74,0.2); color:var(--text-dim); padding:0.4rem 1rem;
   border-radius:50px; cursor:pointer; font-size:0.65rem; letter-spacing:0.1em;
-  text-transform:uppercase; transition:all 0.2s; z-index:5; }
+  text-transform:uppercase; transition:all 0.2s; z-index:5; pointer-events:all; }
 .cube-back:hover { border-color:var(--gold); color:var(--gold); }
 /* Flash overlay for zoom transition */
 #cubeFlash { position:absolute; inset:0; background:#000; opacity:0; pointer-events:none; z-index:10; transition:opacity 0.5s; }
@@ -3934,7 +3934,6 @@ function cubeLoopStart(){
       if(cubeEdgesMesh){cubeEdgesMesh.rotation.x=cubeRotX;cubeEdgesMesh.rotation.y=cubeRotY;}
     }
     cubeRenderer&&cubeRenderer.render(cubeScene,cubeCamera);
-    updateCubeLabels();
   })();
 }
 
@@ -3963,18 +3962,19 @@ function makeFaceTexture(heb,eng,color){
     ctx.strokeStyle=color||'#c9a24a'; ctx.lineWidth=3;
     ctx.beginPath(); ctx.arc(cx,cy,cornSz,0,Math.PI*2); ctx.stroke();
   });
-  // Hebrew label
+  // Hebrew label — Arial/Helvetica support Hebrew on all platforms
   ctx.fillStyle=color||'#c9a24a';
-  ctx.font='bold 88px serif';
+  ctx.font='bold 96px Arial,"Helvetica Neue",Helvetica,sans-serif';
   ctx.textAlign='center'; ctx.textBaseline='middle';
   ctx.shadowColor=color||'#c9a24a'; ctx.shadowBlur=30;
-  ctx.fillText(heb,sz/2,sz/2-20);
-  // English label
-  ctx.fillStyle='rgba(201,162,74,0.55)';
-  ctx.font='600 30px sans-serif';
-  ctx.letterSpacing='6px';
+  ctx.direction='rtl';
+  ctx.fillText(heb,sz/2,sz/2-10);
+  // English sub-label
+  ctx.fillStyle='rgba(201,162,74,0.5)';
+  ctx.font='600 28px Arial,sans-serif';
   ctx.shadowBlur=0;
-  ctx.fillText(eng.toUpperCase(),sz/2,sz/2+60);
+  ctx.direction='ltr';
+  ctx.fillText(eng.toUpperCase(),sz/2,sz/2+70);
   return new THREE.CanvasTexture(c);
 }
 
@@ -4075,6 +4075,47 @@ function initCubeNavigator(){
   },{passive:true});
   cp.addEventListener('touchend',()=>{cubeDragging=false;});
 
+  // Raycaster: click on cube face to navigate
+  const faceTargets=['artists','beats','productions','booking','mix','contact'];
+  let cubeDragMoved=false;
+  cp.addEventListener('mousedown',()=>{cubeDragMoved=false;});
+  cp.addEventListener('mousemove',()=>{cubeDragMoved=true;});
+  canvas.addEventListener('click',e=>{
+    if(cubeDragMoved||cubeZooming)return;
+    const rect=canvas.getBoundingClientRect();
+    const mouse=new THREE.Vector2(
+      ((e.clientX-rect.left)/rect.width)*2-1,
+      -((e.clientY-rect.top)/rect.height)*2+1
+    );
+    const raycaster=new THREE.Raycaster();
+    raycaster.setFromCamera(mouse,cubeCamera);
+    const hits=raycaster.intersectObject(cubeMesh);
+    if(hits.length>0){
+      const fi=hits[0].face.materialIndex;
+      if(fi>=0&&fi<faceTargets.length) cubeNavigateTo(faceTargets[fi]);
+    }
+  });
+  // Touch tap detection
+  let touchStartX=0,touchStartY=0;
+  canvas.addEventListener('touchstart',e=>{touchStartX=e.touches[0].clientX;touchStartY=e.touches[0].clientY;},{passive:true});
+  canvas.addEventListener('touchend',e=>{
+    if(cubeZooming)return;
+    const dx=e.changedTouches[0].clientX-touchStartX, dy=e.changedTouches[0].clientY-touchStartY;
+    if(Math.sqrt(dx*dx+dy*dy)>10)return; // was a drag, not tap
+    const rect=canvas.getBoundingClientRect();
+    const mouse=new THREE.Vector2(
+      ((e.changedTouches[0].clientX-rect.left)/rect.width)*2-1,
+      -((e.changedTouches[0].clientY-rect.top)/rect.height)*2+1
+    );
+    const raycaster=new THREE.Raycaster();
+    raycaster.setFromCamera(mouse,cubeCamera);
+    const hits=raycaster.intersectObject(cubeMesh);
+    if(hits.length>0){
+      const fi=hits[0].face.materialIndex;
+      if(fi>=0&&fi<faceTargets.length) cubeNavigateTo(faceTargets[fi]);
+    }
+  },{passive:true});
+
   cubeAutoSpin=true;
   cubeLoopStart();
 }
@@ -4137,39 +4178,14 @@ document.querySelectorAll('.hero-cta .btn').forEach(btn=>{
 <div id="cubePage">
   <canvas id="cubeCanvas"></canvas>
   <div class="cube-nav-wrap" id="cubeNavWrap">
-    <!-- Floating labels — positions set by JS after render -->
-    <div class="cnl" id="cnl-artists" onclick="cubeNavigateTo('artists')">
-      <span class="cnl-heb">אומנים</span>
-      <span class="cnl-eng">Artists</span>
-    </div>
-    <div class="cnl" id="cnl-productions" onclick="cubeNavigateTo('productions')">
-      <span class="cnl-heb">הפקות</span>
-      <span class="cnl-eng">Productions</span>
-    </div>
-    <div class="cnl" id="cnl-beats" onclick="cubeNavigateTo('beats')">
-      <span class="cnl-heb">ביטים</span>
-      <span class="cnl-eng">Beats</span>
-    </div>
-    <div class="cnl" id="cnl-booking" onclick="cubeNavigateTo('booking')">
-      <span class="cnl-heb">בוקינג</span>
-      <span class="cnl-eng">Booking</span>
-    </div>
-    <div class="cnl" id="cnl-mix" onclick="cubeNavigateTo('mix')">
-      <span class="cnl-heb">מיקס</span>
-      <span class="cnl-eng">Mix It!</span>
-    </div>
-    <div class="cnl" id="cnl-contact" onclick="cubeNavigateTo('contact')">
-      <span class="cnl-heb">צור קשר</span>
-      <span class="cnl-eng">Contact</span>
-    </div>
     <!-- Logo top centre -->
     <div class="cube-nav-logo">GYRO <span>music</span></div>
     <!-- Hint bottom -->
-    <div class="cube-nav-hint">Click a face to navigate · Drag to rotate</div>
+    <div class="cube-nav-hint">לחץ על פנים הקובייה לניווט · גרור לסיבוב</div>
     <!-- Back button -->
     <button class="cube-back" onclick="hideCube()">
       <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
-      Back
+      חזרה
     </button>
   </div>
   <div id="cubeFlash"></div>
