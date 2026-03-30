@@ -467,26 +467,6 @@ body::after {
 }
 @keyframes riseIn { from{opacity:0;transform:translateY(22px);} to{opacity:1;transform:translateY(0);} }
 
-/* ── HERO PARTICLES CANVAS ── */
-#heroCanvas { position:absolute; inset:0; pointer-events:none; z-index:0; opacity:0.6; }
-
-/* ── HERO EQUALIZER BARS ── */
-.hero-eq { position:absolute; bottom:0; left:0; right:0; display:flex; align-items:flex-end; gap:2px; height:42%; pointer-events:none; z-index:0; opacity:0.055; padding:0 2rem; }
-.hero-eq-bar { flex:1; max-width:7px; min-height:3px; background:linear-gradient(to top,var(--accent),rgba(201,162,74,0.45)); border-radius:2px 2px 0 0; transition:height 0.1s ease; }
-
-/* ── HERO GLITCH HOST ── */
-.hero-glitch-host { display:inline-block; }
-@keyframes heroGlitch {
-  0%,87%,100% { clip-path:none; transform:none; }
-  88% { clip-path:polygon(0 18%,100% 18%,100% 40%,0 40%); transform:translateX(-6px); }
-  88.5% { clip-path:polygon(0 58%,100% 58%,100% 76%,0 76%); transform:translateX(6px); }
-  89% { clip-path:polygon(0 5%,100% 5%,100% 16%,0 16%); transform:translateX(-4px); }
-  89.4% { clip-path:none; transform:translateX(0); }
-  89.8% { clip-path:polygon(0 42%,100% 42%,100% 62%,0 62%); transform:translateX(3px); }
-  90.2% { clip-path:none; transform:none; }
-}
-.hero-glitch-host { animation: heroGlitch 18s 6s infinite; }
-
 .btn {
   display: inline-block; padding: 1rem 2.8rem;
   background: linear-gradient(135deg, var(--accent2), var(--accent));
@@ -1389,7 +1369,6 @@ footer span { color: var(--gold); }
 <div class="page active" id="homePage">
 
 <section class="hero">
-  <canvas id="heroCanvas" aria-hidden="true"></canvas>
   <div class="hero-video-bg" aria-hidden="true">
     <div class="hero-vid-orb orb1"></div>
     <div class="hero-vid-orb orb2"></div>
@@ -1499,7 +1478,7 @@ footer span { color: var(--gold); }
       <div class="hero-logo-orn-diamond"></div>
       <div class="hero-logo-orn-line r"></div>
     </div>
-    <div class="hero-glitch-host"><h1 class="hero-logo">GYRO</h1></div>
+    <h1 class="hero-logo">GYRO</h1>
     <div class="hero-logo-tag">music</div>
   </div>
   <p class="hero-slogan">Independent Producers. World Stage.</p>
@@ -1518,8 +1497,6 @@ footer span { color: var(--gold); }
       <polyline class="wf-line" points="0,30 10,30 15,10 20,50 25,15 30,45 35,22 40,38 45,12 50,48 55,20 60,40 65,28 70,32 75,8 80,52 85,18 90,42 95,30 100,30 105,14 110,46 115,25 120,35 125,30 130,18 135,42 140,22 145,38 150,30 155,12 160,48 165,20 170,40 175,30 180,8 185,52 190,25 195,35 200,30 205,18 210,42 215,15 220,45 225,28 230,32 235,22 240,38 245,30 250,30 255,14 260,46 265,30 270,30 275,20 280,40 285,30 290,30 300,30" fill="none" stroke="rgba(201,162,74,0.35)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
     </svg>
   </div>
-
-  <div class="hero-eq" id="heroEq" aria-hidden="true"></div>
 
   <div class="scroll-cue">
     <div class="scroll-cue-text">Scroll</div>
@@ -3722,97 +3699,6 @@ function cardPlayBeat(btn, producerId) {
     el.addEventListener('mouseleave',()=>document.body.classList.remove('cursor-hover'));
   });
 })();
-
-// ══════════════════════════════════════
-// HERO FX: particles · parallax · EQ · glitch
-// ══════════════════════════════════════
-function initHeroFX() {
-
-  // 1. Canvas particle field
-  const canvas = document.getElementById('heroCanvas');
-  if (canvas) {
-    const ctx = canvas.getContext('2d');
-    let W=0, H=0, pts=[];
-    function setupCanvas() {
-      const hero = document.querySelector('.hero');
-      if (!hero) return;
-      W = canvas.width = hero.offsetWidth;
-      H = canvas.height = hero.offsetHeight;
-      pts = Array.from({length:55}, () => ({
-        x:Math.random()*W, y:Math.random()*H,
-        vx:(Math.random()-.5)*.22, vy:(Math.random()-.5)*.22,
-        r:Math.random()*1.3+.3, a:Math.random()*.38+.08
-      }));
-    }
-    setupCanvas();
-    window.addEventListener('resize', setupCanvas);
-    (function pLoop() {
-      ctx.clearRect(0,0,W,H);
-      pts.forEach((p,i) => {
-        p.x=(p.x+p.vx+W)%W; p.y=(p.y+p.vy+H)%H;
-        ctx.beginPath(); ctx.arc(p.x,p.y,p.r,0,6.28);
-        ctx.fillStyle=`rgba(201,162,74,${p.a})`; ctx.fill();
-        for(let j=i+1;j<pts.length;j++) {
-          const q=pts[j], d=Math.hypot(p.x-q.x, p.y-q.y);
-          if(d<115) {
-            ctx.beginPath(); ctx.moveTo(p.x,p.y); ctx.lineTo(q.x,q.y);
-            ctx.strokeStyle=`rgba(200,121,58,${.09*(1-d/115)})`;
-            ctx.lineWidth=.5; ctx.stroke();
-          }
-        }
-      });
-      requestAnimationFrame(pLoop);
-    })();
-  }
-
-  // 2. Equalizer bars
-  const eqWrap = document.getElementById('heroEq');
-  if (eqWrap) {
-    for (let i=0; i<65; i++) {
-      const b = document.createElement('div');
-      b.className = 'hero-eq-bar';
-      b.style.height = (3+Math.random()*97)+'%';
-      eqWrap.appendChild(b);
-    }
-    const bars = [...eqWrap.children];
-    (function tickEq() {
-      bars.forEach(b => {
-        b.style.height = (3+Math.random()*97)+'%';
-        b.style.transitionDuration = (.06+Math.random()*.26)+'s';
-      });
-      setTimeout(tickEq, 80+Math.random()*110);
-    })();
-  }
-
-  // 3. Mouse parallax on decorative layers
-  const hero = document.querySelector('.hero');
-  if (!hero) return;
-  let tx=0, ty=0, cx=0, cy=0;
-  hero.addEventListener('mousemove', e => {
-    const r = hero.getBoundingClientRect();
-    tx = (e.clientX - r.left - r.width*.5) / r.width;
-    ty = (e.clientY - r.top  - r.height*.5) / r.height;
-  });
-  hero.addEventListener('mouseleave', () => { tx=0; ty=0; });
-
-  const pLayers = [
-    ['.hero-ornament-outermost', -30, -20],
-    ['.hero-ornament-outer',      22,  16],
-    ['.hero-ornament-inner',     -14, -10],
-    ['.hero-video-bg',            18,  13],
-  ].map(([sel,mx,my]) => [document.querySelector(sel), mx, my]);
-
-  (function parallaxLoop() {
-    cx += (tx-cx)*.055;
-    cy += (ty-cy)*.055;
-    pLayers.forEach(([el,mx,my]) => {
-      if (el) el.style.transform = `translate(${cx*mx}px,${cy*my}px)`;
-    });
-    requestAnimationFrame(parallaxLoop);
-  })();
-}
-
-document.addEventListener('DOMContentLoaded', initHeroFX);
 
 </script>
 
