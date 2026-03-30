@@ -568,8 +568,11 @@ body::after {
 .section-rule { width: 40px; height: 1px; background: linear-gradient(90deg, var(--accent), var(--gold)); margin-bottom: 1.5rem; }
 
 /* ── REVEAL ── */
-.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.8s cubic-bezier(0.25,0.46,0.45,0.94), transform 0.8s cubic-bezier(0.25,0.46,0.45,0.94); }
-.reveal.visible { opacity: 1; transform: translateY(0); }
+.reveal { opacity: 0; transform: translateY(32px) scale(0.97); transition: opacity 0.9s cubic-bezier(0.25,0.46,0.45,0.94), transform 0.9s cubic-bezier(0.25,0.46,0.45,0.94); }
+.reveal.visible { opacity: 1; transform: translateY(0) scale(1); }
+
+/* ── CARD SHINE (3D tilt) ── */
+.card-shine { position:absolute; inset:0; z-index:10; border-radius:var(--radius); pointer-events:none; opacity:0; transition:opacity 0.35s; mix-blend-mode:overlay; }
 
 /* ══ BEATS PAGE ══ */
 .beats-shell { display:flex; flex-direction:column; height:100vh; background:var(--bg); overflow:hidden; }
@@ -3685,7 +3688,7 @@ function cardPlayBeat(btn, producerId) {
   currentSource.onended=()=>{ btn.classList.remove('playing'); btn.innerHTML='<svg width="14" height="14" viewBox="0 0 16 16" fill="#0c0804"><path d="M4 3l10 5-10 5z"/></svg>'; isPlaying=false; };
 }
 
-// ── CUSTOM CURSOR ──
+// ── CUSTOM CURSOR + SPRING RING ──
 (function(){
   const cur=document.getElementById('customCursor');
   if(!cur) return;
@@ -3698,7 +3701,73 @@ function cardPlayBeat(btn, producerId) {
     el.addEventListener('mouseenter',()=>document.body.classList.add('cursor-hover'));
     el.addEventListener('mouseleave',()=>document.body.classList.remove('cursor-hover'));
   });
+  // Spring physics for ring lag
+  (function springTick(){
+    rx+=(mx-rx)*0.10; ry+=(my-ry)*0.10;
+    ring.style.transform=`translate(calc(-50% + ${rx-mx}px), calc(-50% + ${ry-my}px))`;
+    requestAnimationFrame(springTick);
+  })();
 })();
+
+// ══════════════════════════════════════
+// WOW FX
+// ══════════════════════════════════════
+
+// 1 ── 3D Card Tilt + Shine
+function initCardTilt(){
+  document.querySelectorAll('.producer-card').forEach(card=>{
+    if(!card.querySelector('.card-shine')){
+      const s=document.createElement('div'); s.className='card-shine'; card.appendChild(s);
+    }
+    card.addEventListener('mousemove',e=>{
+      const r=card.getBoundingClientRect();
+      const x=(e.clientX-r.left)/r.width-.5, y=(e.clientY-r.top)/r.height-.5;
+      card.style.transition='box-shadow 0.08s';
+      card.style.transform=`perspective(900px) rotateX(${-y*15}deg) rotateY(${x*15}deg) translateY(-12px) scale(1.025)`;
+      const sh=card.querySelector('.card-shine');
+      if(sh){sh.style.opacity='1';sh.style.background=`radial-gradient(circle at ${(x+.5)*100}% ${(y+.5)*100}%, rgba(255,255,255,0.13) 0%, transparent 62%)`;}
+    });
+    card.addEventListener('mouseleave',()=>{
+      card.style.transition='transform 0.75s cubic-bezier(0.25,0.46,0.45,0.94), box-shadow 0.45s, border-color 0.45s';
+      card.style.transform='';
+      const sh=card.querySelector('.card-shine'); if(sh) sh.style.opacity='0';
+      setTimeout(()=>{card.style.transition='';},750);
+    });
+  });
+}
+initCardTilt();
+
+// 2 ── Text Scramble on section eyebrows
+const SC='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$&';
+function scrambleEl(el){
+  const orig=el.textContent; let f=0,tot=24;
+  const iv=setInterval(()=>{
+    f++; const p=f/tot;
+    el.textContent=[...orig].map((c,i)=>{
+      if(' ·—•'.includes(c)) return c;
+      return i<Math.floor(p*orig.length*1.5) ? c : SC[Math.floor(Math.random()*SC.length)];
+    }).join('');
+    if(f>=tot){clearInterval(iv);el.textContent=orig;}
+  },30);
+}
+const scrambleObs=new IntersectionObserver(entries=>{
+  entries.forEach(e=>{if(!e.isIntersecting)return; scrambleEl(e.target); scrambleObs.unobserve(e.target);});
+},{threshold:0.6});
+document.querySelectorAll('.section-eyebrow,.hero-eyebrow').forEach(el=>scrambleObs.observe(el));
+
+// 3 ── Magnetic Buttons
+document.querySelectorAll('.hero-cta .btn').forEach(btn=>{
+  btn.addEventListener('mousemove',e=>{
+    const r=btn.getBoundingClientRect();
+    const x=(e.clientX-r.left-r.width*.5)*.38, y=(e.clientY-r.top-r.height*.5)*.38;
+    btn.style.transform=`translate(${x}px,${y}px) translateY(-4px)`;
+  });
+  btn.addEventListener('mouseleave',()=>{
+    btn.style.transition='transform 0.65s cubic-bezier(0.25,0.46,0.45,0.94), box-shadow 0.4s';
+    btn.style.transform='';
+    setTimeout(()=>{btn.style.transition='';},650);
+  });
+});
 
 </script>
 
