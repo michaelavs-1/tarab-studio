@@ -14,6 +14,7 @@
 <meta name="twitter:card" content="summary_large_image">
 <link rel="canonical" href="https://gyro-music.netlify.app">
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=Playfair+Display:ital,wght@0,700;0,900;1,700&family=Great+Vibes&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <style>
 *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
 
@@ -270,7 +271,12 @@ body::after {
 .navbar-links a.nav-active { color: var(--gold); }
 .navbar-links a.nav-active::after { width: 100%; }
 
-/* Mixer nav link — same as other nav links */
+/* Cube nav button — subtle gold accent */
+.navbar-links .nav-cube-btn { color: var(--gold); border: 1px solid rgba(201,162,74,0.28); border-radius: 6px; padding: 0.22rem 0.65rem; margin-left: 0.3rem; transition: color 0.22s, background 0.22s, border-color 0.22s; }
+.navbar-links .nav-cube-btn:hover { background: rgba(201,162,74,0.1); border-color: var(--gold); color: var(--gold-bright); }
+.navbar-links .nav-cube-btn::after { display:none; }
+.navbar-links .nav-cube-btn.nav-active { background: rgba(201,162,74,0.14); border-color: var(--gold-bright); color: var(--gold-bright); }
+.mobile-nav .nav-cube-btn { color: var(--gold); }
 
 .navbar-menu-btn {
   display: none; background: none; border: 1px solid rgba(201,162,74,0.25);
@@ -308,6 +314,44 @@ body::after {
 .page.active { display: block; animation: pageIn 0.5s cubic-bezier(0.25,0.46,0.45,0.94) both; }
 .page-transition { animation: pageIn 0.6s cubic-bezier(0.25,0.46,0.45,0.94); }
 @keyframes pageIn { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
+
+/* ══ CUBE NAVIGATOR PAGE ══ */
+#cubePage { background:#000; position:fixed!important; inset:0; z-index:950; overflow:hidden; }
+#cubePage.active { display:flex; flex-direction:column; align-items:center; justify-content:center; }
+#cubeCanvas { position:absolute; inset:0; width:100%!important; height:100%!important; }
+.cube-nav-wrap { position:relative; width:100%; height:100vh; pointer-events:none; }
+/* Floating category labels */
+.cnl { position:absolute; pointer-events:all; cursor:pointer; text-align:center;
+  background:rgba(5,3,1,0.82); border:1px solid rgba(201,162,74,0.35);
+  border-radius:10px; padding:0.7rem 1.4rem; backdrop-filter:blur(10px);
+  transition:border-color 0.3s,background 0.3s,transform 0.3s,box-shadow 0.3s;
+  user-select:none;
+}
+.cnl:hover { border-color:var(--gold); background:rgba(20,12,4,0.95);
+  box-shadow:0 0 28px rgba(201,162,74,0.2); transform:scale(1.06); }
+.cnl.active-label { border-color:#e8bf62; box-shadow:0 0 40px rgba(201,162,74,0.4); }
+.cnl-heb { display:block; font-family:'Playfair Display',serif; font-size:1.4rem; font-weight:900;
+  color:var(--gold); letter-spacing:0.04em; line-height:1.1; }
+.cnl-eng { display:block; font-size:0.58rem; font-weight:700; color:var(--text-dim);
+  letter-spacing:0.2em; text-transform:uppercase; margin-top:3px; }
+/* Top logo */
+.cube-nav-logo { position:absolute; top:1.6rem; left:50%; transform:translateX(-50%);
+  font-family:'Playfair Display',serif; font-size:1.5rem; font-weight:900;
+  color:var(--gold); letter-spacing:0.2em; pointer-events:none; z-index:2;
+  text-shadow:0 0 30px rgba(201,162,74,0.5); }
+.cube-nav-logo span { font-family:'Great Vibes',cursive; font-size:1rem; color:rgba(201,162,74,0.6); margin-left:0.3rem; }
+/* Back / enter hint */
+.cube-nav-hint { position:absolute; bottom:2.5rem; left:50%; transform:translateX(-50%);
+  font-size:0.6rem; letter-spacing:0.3em; text-transform:uppercase; color:var(--text-dim);
+  pointer-events:none; animation:scrollFade 3s ease-in-out infinite; }
+.cube-back { position:absolute; top:1.5rem; left:2rem; background:none;
+  border:1px solid rgba(201,162,74,0.2); color:var(--text-dim); padding:0.4rem 1rem;
+  border-radius:50px; cursor:pointer; font-size:0.65rem; letter-spacing:0.1em;
+  text-transform:uppercase; transition:all 0.2s; z-index:5; }
+.cube-back:hover { border-color:var(--gold); color:var(--gold); }
+/* Flash overlay for zoom transition */
+#cubeFlash { position:absolute; inset:0; background:#000; opacity:0; pointer-events:none; z-index:10; transition:opacity 0.5s; }
+#cubeFlash.flash { opacity:1; }
 
 /* ══════════════════════
    HERO — EXTREME VERSION
@@ -1366,6 +1410,7 @@ footer span { color: var(--gold); }
     <a href="#" onclick="navScroll('contact'); return false;">Contact</a>
     <a href="#" class="nav-beats-btn" onclick="showBeats(); return false;">Beats</a>
     <a href="#" class="nav-mixer-btn" onclick="showMixer(); return false;">Mix it!</a>
+    <a href="#" class="nav-cube-btn" onclick="showCube(); return false;">&#9670; Explore</a>
   </div>
   <button class="navbar-menu-btn" id="menuBtn" aria-label="Menu">
     <svg width="18" height="14" viewBox="0 0 18 14" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"><line x1="0" y1="1" x2="18" y2="1"/><line x1="0" y1="7" x2="18" y2="7"/><line x1="0" y1="13" x2="18" y2="13"/></svg>
@@ -1381,6 +1426,7 @@ footer span { color: var(--gold); }
   <a href="#" onclick="closeMobileNav(); navScroll('contact'); return false;">Contact</a>
   <a href="#" class="nav-beats-btn" onclick="closeMobileNav(); showBeats(); return false;">Beats</a>
   <a href="#" class="nav-mixer-btn" onclick="closeMobileNav(); showMixer(); return false;">Mix it!</a>
+  <a href="#" class="nav-cube-btn" onclick="closeMobileNav(); showCube(); return false;">&#9670; Explore</a>
 </div>
 
 <!-- ═══════════ HOME PAGE ═══════════ -->
@@ -2221,6 +2267,8 @@ function setNavActive(key) {
     document.querySelectorAll('.navbar-links .nav-beats-btn').forEach(a => a.classList.add('nav-active'));
   } else if (key === 'mixer') {
     document.querySelectorAll('.navbar-links .nav-mixer-btn').forEach(a => a.classList.add('nav-active'));
+  } else if (key === 'cube') {
+    document.querySelectorAll('.navbar-links .nav-cube-btn').forEach(a => a.classList.add('nav-active'));
   } else if (key === 'home') {
     const links = document.querySelectorAll('.navbar-links a');
     if (links[0]) links[0].classList.add('nav-active');
@@ -2239,6 +2287,7 @@ function showHome() {
   document.getElementById('producerPage').classList.remove('active');
   document.getElementById('mixerPage').classList.remove('active');
   document.getElementById('beatsPage').classList.remove('active');
+  document.getElementById('cubePage').classList.remove('active');
   document.body.classList.remove('beats-open', 'mixer-open');
   requestAnimationFrame(() => window.scrollTo({ top: savedScrollY, behavior: 'instant' }));
   history.pushState({page:'home'}, '', '#');
@@ -2250,6 +2299,7 @@ function showMixer() {
   document.getElementById('homePage').classList.remove('active');
   document.getElementById('producerPage').classList.remove('active');
   document.getElementById('beatsPage').classList.remove('active');
+  document.getElementById('cubePage').classList.remove('active');
   document.getElementById('mixerPage').classList.add('active');
   document.body.classList.remove('beats-open');
   document.body.classList.add('mixer-open');
@@ -2270,6 +2320,7 @@ function showBeats() {
   document.getElementById('homePage').classList.remove('active');
   document.getElementById('producerPage').classList.remove('active');
   document.getElementById('mixerPage').classList.remove('active');
+  document.getElementById('cubePage').classList.remove('active');
   document.getElementById('beatsPage').classList.add('active');
   document.body.classList.remove('mixer-open');
   document.body.classList.add('beats-open');
@@ -2652,6 +2703,7 @@ document.querySelectorAll('.stats-bar').forEach(el => counterObs.observe(el));
 // ══════════════════════════════════════
 window.addEventListener('popstate', () => {
   if (document.getElementById('producerPage').classList.contains('active')) showHome();
+  if (document.getElementById('cubePage').classList.contains('active')) hideCube();
 });
 
 const contactForm = document.querySelector('form[name="contact"]');
@@ -3786,6 +3838,314 @@ const scrambleObs=new IntersectionObserver(entries=>{
 },{threshold:0.6});
 document.querySelectorAll('.section-eyebrow,.hero-eyebrow').forEach(el=>scrambleObs.observe(el));
 
+// ═══════════════════════════════════════
+// CUBE NAVIGATOR
+// ═══════════════════════════════════════
+let cubeScene=null, cubeRenderer=null, cubeCamera=null, cubeMesh=null, cubeEdgesMesh=null;
+let cubeRAF=null, cubeInited=false;
+let cubeDragging=false, cubeLastX=0, cubeLastY=0;
+let cubeRotX=0.35, cubeRotY=0.55;
+let cubeAutoSpin=true;
+let cubeZooming=false;
+
+function showCube(){
+  stopAudio();
+  if(bpAudio){bpAudio.pause();bpAudio=null;bpPlaying=false;}
+  const cp=document.getElementById('cubePage');
+  document.getElementById('homePage').classList.remove('active');
+  document.getElementById('producerPage').classList.remove('active');
+  document.getElementById('mixerPage').classList.remove('active');
+  document.getElementById('beatsPage').classList.remove('active');
+  document.body.classList.remove('beats-open','mixer-open');
+  cp.classList.add('active');
+  history.pushState({page:'cube'},'','#explore');
+  setNavActive('cube');
+  if(!cubeInited){initCubeNavigator();cubeInited=true;}
+  else{cubeRenderer&&cubeRenderer.setSize(window.innerWidth,window.innerHeight);cubeLoopStart();}
+}
+
+function hideCube(){
+  document.getElementById('cubePage').classList.remove('active');
+  cubeLoopStop();
+  showHome();
+}
+
+function cubeNavigateTo(target){
+  if(cubeZooming)return;
+  cubeZooming=true;
+  // highlight label
+  document.querySelectorAll('.cnl').forEach(el=>el.classList.remove('active-label'));
+  const labelEl=document.getElementById('cnl-'+target);
+  if(labelEl)labelEl.classList.add('active-label');
+  // get face index for this target
+  const faceMap={artists:0,beats:1,productions:2,booking:3,mix:4,contact:5};
+  const faceIdx=faceMap[target]??0;
+  // rotate cube so selected face points toward camera, then zoom in
+  alignCubeToFace(faceIdx,()=>{
+    zoomIntoFace(()=>{
+      const flash=document.getElementById('cubeFlash');
+      flash.classList.add('flash');
+      setTimeout(()=>{
+        cubeZooming=false;
+        flash.classList.remove('flash');
+        document.getElementById('cubePage').classList.remove('active');
+        cubeLoopStop();
+        if(target==='artists'){ showHome(); }
+        else if(target==='beats'){ showBeats(); }
+        else if(target==='mix'){ showMixer(); }
+        else if(target==='productions'){ showHome(); requestAnimationFrame(()=>requestAnimationFrame(()=>{ const t=document.getElementById('mission'); if(t)t.scrollIntoView({behavior:'smooth'}); })); }
+        else if(target==='booking'){ showHome(); requestAnimationFrame(()=>requestAnimationFrame(()=>{ const t=document.getElementById('contact'); if(t)t.scrollIntoView({behavior:'smooth'}); })); }
+        else if(target==='contact'){ showHome(); requestAnimationFrame(()=>requestAnimationFrame(()=>{ const t=document.getElementById('contact'); if(t)t.scrollIntoView({behavior:'smooth'}); })); }
+      },480);
+    });
+  });
+}
+
+// Face normals for BoxGeometry (Three.js order: +X,-X,+Y,-Y,+Z,-Z)
+const FACE_NORMALS=[
+  new THREE.Vector3(1,0,0),
+  new THREE.Vector3(-1,0,0),
+  new THREE.Vector3(0,1,0),
+  new THREE.Vector3(0,-1,0),
+  new THREE.Vector3(0,0,1),
+  new THREE.Vector3(0,0,-1)
+];
+
+function alignCubeToFace(faceIdx,cb){
+  // We want the face normal to point toward camera (0,0,1 in world)
+  const target=FACE_NORMALS[faceIdx].clone();
+  const startX=cubeRotX, startY=cubeRotY;
+  // Compute target rotX/Y so the face normal aligns with +Z camera direction
+  let tX=0,tY=0;
+  if(faceIdx===0){tX=0;tY=-Math.PI/2;}      // +X → rotate cube -90° around Y
+  else if(faceIdx===1){tX=0;tY=Math.PI/2;}  // -X → +90° Y
+  else if(faceIdx===2){tX=-Math.PI/2;tY=0;} // +Y → -90° X
+  else if(faceIdx===3){tX=Math.PI/2;tY=0;}  // -Y → +90° X
+  else if(faceIdx===4){tX=0;tY=0;}          // +Z → straight on
+  else if(faceIdx===5){tX=0;tY=Math.PI;}    // -Z → 180° Y
+  // normalise Y delta
+  let dY=tY-startY; while(dY>Math.PI)dY-=2*Math.PI; while(dY<-Math.PI)dY+=2*Math.PI;
+  let dX=tX-startX; while(dX>Math.PI)dX-=2*Math.PI; while(dX<-Math.PI)dX+=2*Math.PI;
+  const dur=800, t0=performance.now();
+  cubeAutoSpin=false;
+  (function spin(){
+    const p=Math.min((performance.now()-t0)/dur,1);
+    const e=1-(1-p)*(1-p)*(1-p);
+    cubeRotX=startX+dX*e;
+    cubeRotY=startY+dY*e;
+    if(cubeMesh){cubeMesh.rotation.x=cubeRotX;cubeMesh.rotation.y=cubeRotY;}
+    if(cubeEdgesMesh){cubeEdgesMesh.rotation.x=cubeRotX;cubeEdgesMesh.rotation.y=cubeRotY;}
+    if(p<1)requestAnimationFrame(spin);
+    else cb();
+  })();
+}
+
+function zoomIntoFace(cb){
+  const startZ=cubeCamera.position.z;
+  const endZ=-0.6; // push camera through the face
+  const dur=700, t0=performance.now();
+  (function zoom(){
+    const p=Math.min((performance.now()-t0)/dur,1);
+    const e=p<0.5?2*p*p:1-Math.pow(-2*p+2,2)/2; // easeInOutQuad
+    cubeCamera.position.z=startZ+(endZ-startZ)*e;
+    if(p<1)requestAnimationFrame(zoom);
+    else cb();
+  })();
+}
+
+function cubeLoopStart(){
+  if(cubeRAF)return;
+  (function loop(){
+    cubeRAF=requestAnimationFrame(loop);
+    if(cubeAutoSpin&&!cubeDragging&&!cubeZooming){
+      cubeRotY+=0.003; cubeRotX+=0.0008;
+      if(cubeMesh){cubeMesh.rotation.x=cubeRotX;cubeMesh.rotation.y=cubeRotY;}
+      if(cubeEdgesMesh){cubeEdgesMesh.rotation.x=cubeRotX;cubeEdgesMesh.rotation.y=cubeRotY;}
+    }
+    cubeRenderer&&cubeRenderer.render(cubeScene,cubeCamera);
+    updateCubeLabels();
+  })();
+}
+
+function cubeLoopStop(){
+  if(cubeRAF){cancelAnimationFrame(cubeRAF);cubeRAF=null;}
+}
+
+function makeFaceTexture(heb,eng,color){
+  const sz=512;
+  const c=document.createElement('canvas'); c.width=sz; c.height=sz;
+  const ctx=c.getContext('2d');
+  // Background
+  ctx.fillStyle='#0a0602';
+  ctx.fillRect(0,0,sz,sz);
+  // Gold border frame
+  ctx.strokeStyle=color||'#c9a24a';
+  ctx.lineWidth=18;
+  ctx.strokeRect(12,12,sz-24,sz-24);
+  // Inner thin border
+  ctx.strokeStyle='rgba(201,162,74,0.25)';
+  ctx.lineWidth=2;
+  ctx.strokeRect(28,28,sz-56,sz-56);
+  // Corner ornaments
+  const cornSz=40;
+  [[18,18],[sz-18,18],[18,sz-18],[sz-18,sz-18]].forEach(([cx,cy])=>{
+    ctx.strokeStyle=color||'#c9a24a'; ctx.lineWidth=3;
+    ctx.beginPath(); ctx.arc(cx,cy,cornSz,0,Math.PI*2); ctx.stroke();
+  });
+  // Hebrew label
+  ctx.fillStyle=color||'#c9a24a';
+  ctx.font='bold 88px serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.shadowColor=color||'#c9a24a'; ctx.shadowBlur=30;
+  ctx.fillText(heb,sz/2,sz/2-20);
+  // English label
+  ctx.fillStyle='rgba(201,162,74,0.55)';
+  ctx.font='600 30px sans-serif';
+  ctx.letterSpacing='6px';
+  ctx.shadowBlur=0;
+  ctx.fillText(eng.toUpperCase(),sz/2,sz/2+60);
+  return new THREE.CanvasTexture(c);
+}
+
+function initCubeNavigator(){
+  const canvas=document.getElementById('cubeCanvas');
+  const W=window.innerWidth, H=window.innerHeight;
+
+  // Scene
+  cubeScene=new THREE.Scene();
+  cubeCamera=new THREE.PerspectiveCamera(55,W/H,0.01,100);
+  cubeCamera.position.set(0,0,4.2);
+
+  cubeRenderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:true});
+  cubeRenderer.setPixelRatio(Math.min(devicePixelRatio,2));
+  cubeRenderer.setSize(W,H);
+  cubeRenderer.setClearColor(0x000000,1);
+
+  // Ambient + point lights
+  cubeScene.add(new THREE.AmbientLight(0xffffff,0.35));
+  const pl=new THREE.PointLight(0xc8793a,1.8,20);
+  pl.position.set(3,3,5); cubeScene.add(pl);
+  const pl2=new THREE.PointLight(0xc9a24a,0.8,20);
+  pl2.position.set(-3,-2,-3); cubeScene.add(pl2);
+
+  // Face data: [hebrew, english, accent color]
+  const faces=[
+    ['אומנים','Artists','#c9a24a'],
+    ['ביטים','Beats','#e8bf62'],
+    ['הפקות','Productions','#c9a24a'],
+    ['בוקינג','Booking','#c8793a'],
+    ['מיקס','Mix It!','#e8bf62'],
+    ['צור קשר','Contact','#c9a24a'],
+  ];
+
+  // Cube with per-face materials
+  const geo=new THREE.BoxGeometry(2,2,2);
+  const mats=faces.map(([h,e,col])=>new THREE.MeshStandardMaterial({map:makeFaceTexture(h,e,col),roughness:0.55,metalness:0.3}));
+  cubeMesh=new THREE.Mesh(geo,mats);
+  cubeScene.add(cubeMesh);
+
+  // Glowing gold edges
+  const edgesGeo=new THREE.EdgesGeometry(geo);
+  const edgeMat=new THREE.LineBasicMaterial({color:0xc9a24a,linewidth:1.5,transparent:true,opacity:0.9});
+  cubeEdgesMesh=new THREE.LineSegments(edgesGeo,edgeMat);
+  cubeScene.add(cubeEdgesMesh);
+
+  // Particle cloud around cube
+  const ptGeo=new THREE.BufferGeometry();
+  const ptCount=180;
+  const ptPos=new Float32Array(ptCount*3);
+  for(let i=0;i<ptCount;i++){
+    const r=2.5+Math.random()*2.5;
+    const th=Math.random()*Math.PI*2;
+    const ph=Math.acos(2*Math.random()-1);
+    ptPos[i*3]=r*Math.sin(ph)*Math.cos(th);
+    ptPos[i*3+1]=r*Math.sin(ph)*Math.sin(th);
+    ptPos[i*3+2]=r*Math.cos(ph);
+  }
+  ptGeo.setAttribute('position',new THREE.BufferAttribute(ptPos,3));
+  const ptMat=new THREE.PointsMaterial({color:0xc9a24a,size:0.035,transparent:true,opacity:0.55});
+  cubeScene.add(new THREE.Points(ptGeo,ptMat));
+
+  cubeRotX=0.35; cubeRotY=0.55;
+  cubeMesh.rotation.x=cubeRotX; cubeMesh.rotation.y=cubeRotY;
+  cubeEdgesMesh.rotation.x=cubeRotX; cubeEdgesMesh.rotation.y=cubeRotY;
+
+  // Resize handler
+  window.addEventListener('resize',()=>{
+    if(!document.getElementById('cubePage').classList.contains('active'))return;
+    cubeCamera.aspect=window.innerWidth/window.innerHeight;
+    cubeCamera.updateProjectionMatrix();
+    cubeRenderer.setSize(window.innerWidth,window.innerHeight);
+  });
+
+  // Drag to rotate
+  const cp=document.getElementById('cubePage');
+  cp.addEventListener('mousedown',e=>{cubeDragging=true;cubeAutoSpin=false;cubeLastX=e.clientX;cubeLastY=e.clientY;});
+  cp.addEventListener('mousemove',e=>{
+    if(!cubeDragging||cubeZooming)return;
+    cubeRotY+=(e.clientX-cubeLastX)*0.008;
+    cubeRotX+=(e.clientY-cubeLastY)*0.008;
+    cubeLastX=e.clientX; cubeLastY=e.clientY;
+    if(cubeMesh){cubeMesh.rotation.x=cubeRotX;cubeMesh.rotation.y=cubeRotY;}
+    if(cubeEdgesMesh){cubeEdgesMesh.rotation.x=cubeRotX;cubeEdgesMesh.rotation.y=cubeRotY;}
+  });
+  cp.addEventListener('mouseup',()=>{cubeDragging=false;});
+  cp.addEventListener('mouseleave',()=>{cubeDragging=false;});
+
+  // Touch drag
+  cp.addEventListener('touchstart',e=>{cubeDragging=true;cubeAutoSpin=false;cubeLastX=e.touches[0].clientX;cubeLastY=e.touches[0].clientY;},{passive:true});
+  cp.addEventListener('touchmove',e=>{
+    if(!cubeDragging||cubeZooming)return;
+    cubeRotY+=(e.touches[0].clientX-cubeLastX)*0.01;
+    cubeRotX+=(e.touches[0].clientY-cubeLastY)*0.01;
+    cubeLastX=e.touches[0].clientX; cubeLastY=e.touches[0].clientY;
+    if(cubeMesh){cubeMesh.rotation.x=cubeRotX;cubeMesh.rotation.y=cubeRotY;}
+    if(cubeEdgesMesh){cubeEdgesMesh.rotation.x=cubeRotX;cubeEdgesMesh.rotation.y=cubeRotY;}
+  },{passive:true});
+  cp.addEventListener('touchend',()=>{cubeDragging=false;});
+
+  cubeAutoSpin=true;
+  cubeLoopStart();
+}
+
+// Project 3D cube face centre to 2D screen for label positioning
+function updateCubeLabels(){
+  if(!cubeMesh||!cubeCamera||!cubeRenderer)return;
+  const faceTargets=['cnl-artists','cnl-beats','cnl-productions','cnl-booking','cnl-mix','cnl-contact'];
+  const faceCentres=[
+    new THREE.Vector3(1.05,0,0),
+    new THREE.Vector3(-1.05,0,0),
+    new THREE.Vector3(0,1.05,0),
+    new THREE.Vector3(0,-1.05,0),
+    new THREE.Vector3(0,0,1.05),
+    new THREE.Vector3(0,0,-1.05),
+  ];
+  const W=cubeRenderer.domElement.clientWidth, H=cubeRenderer.domElement.clientHeight;
+  faceCentres.forEach((fc,i)=>{
+    const v=fc.clone().applyEuler(new THREE.Euler(cubeRotX,cubeRotY,0,'XYZ'));
+    const p4=new THREE.Vector4(v.x,v.y,v.z,1);
+    p4.applyMatrix4(cubeCamera.matrixWorldInverse);
+    p4.applyMatrix4(cubeCamera.projectionMatrix);
+    const ndcX=p4.x/p4.w, ndcY=p4.y/p4.w, ndcZ=p4.z/p4.w;
+    const sx=(ndcX*.5+.5)*W, sy=(-ndcY*.5+.5)*H;
+    const el=document.getElementById(faceTargets[i]);
+    if(!el)return;
+    // Dot product: is face pointing toward camera?
+    const dot=v.dot(new THREE.Vector3(0,0,1));
+    if(dot>0.15&&ndcZ<1){
+      el.style.display='block';
+      el.style.left=(sx-el.offsetWidth/2)+'px';
+      el.style.top=(sy-el.offsetHeight/2)+'px';
+      el.style.opacity=Math.min(1,(dot-0.15)*3).toFixed(2);
+      el.style.pointerEvents=dot>0.5?'all':'none';
+    } else {
+      el.style.display='none';
+    }
+  });
+}
+
+// ═══════════════════════════════════════
+
 // 3 ── Magnetic Buttons
 document.querySelectorAll('.hero-cta .btn').forEach(btn=>{
   btn.addEventListener('mousemove',e=>{
@@ -3801,6 +4161,48 @@ document.querySelectorAll('.hero-cta .btn').forEach(btn=>{
 });
 
 </script>
+
+<!-- ═══════════ CUBE NAVIGATOR PAGE ═══════════ -->
+<div id="cubePage">
+  <canvas id="cubeCanvas"></canvas>
+  <div class="cube-nav-wrap" id="cubeNavWrap">
+    <!-- Floating labels — positions set by JS after render -->
+    <div class="cnl" id="cnl-artists" onclick="cubeNavigateTo('artists')">
+      <span class="cnl-heb">אומנים</span>
+      <span class="cnl-eng">Artists</span>
+    </div>
+    <div class="cnl" id="cnl-productions" onclick="cubeNavigateTo('productions')">
+      <span class="cnl-heb">הפקות</span>
+      <span class="cnl-eng">Productions</span>
+    </div>
+    <div class="cnl" id="cnl-beats" onclick="cubeNavigateTo('beats')">
+      <span class="cnl-heb">ביטים</span>
+      <span class="cnl-eng">Beats</span>
+    </div>
+    <div class="cnl" id="cnl-booking" onclick="cubeNavigateTo('booking')">
+      <span class="cnl-heb">בוקינג</span>
+      <span class="cnl-eng">Booking</span>
+    </div>
+    <div class="cnl" id="cnl-mix" onclick="cubeNavigateTo('mix')">
+      <span class="cnl-heb">מיקס</span>
+      <span class="cnl-eng">Mix It!</span>
+    </div>
+    <div class="cnl" id="cnl-contact" onclick="cubeNavigateTo('contact')">
+      <span class="cnl-heb">צור קשר</span>
+      <span class="cnl-eng">Contact</span>
+    </div>
+    <!-- Logo top centre -->
+    <div class="cube-nav-logo">GYRO <span>music</span></div>
+    <!-- Hint bottom -->
+    <div class="cube-nav-hint">Click a face to navigate · Drag to rotate</div>
+    <!-- Back button -->
+    <button class="cube-back" onclick="hideCube()">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="15 18 9 12 15 6"/></svg>
+      Back
+    </button>
+  </div>
+  <div id="cubeFlash"></div>
+</div>
 
 <nav class="mobile-bottom-nav" id="mobileBottomNav">
   <a href="#" onclick="navGoHome();return false;" class="mbn-item" id="mbnRoster">
