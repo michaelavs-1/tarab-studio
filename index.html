@@ -305,9 +305,9 @@ body::after {
 
 /* ── PAGE SYSTEM ── */
 .page { display: none; position: relative; z-index: 1; }
-.page.active { display: block; }
+.page.active { display: block; animation: pageIn 0.5s cubic-bezier(0.25,0.46,0.45,0.94) both; }
 .page-transition { animation: pageIn 0.6s cubic-bezier(0.25,0.46,0.45,0.94); }
-@keyframes pageIn { from{opacity:0;transform:translateY(24px);} to{opacity:1;transform:translateY(0);} }
+@keyframes pageIn { from{opacity:0;transform:translateY(20px);} to{opacity:1;transform:translateY(0);} }
 
 /* ══════════════════════
    HERO — EXTREME VERSION
@@ -420,11 +420,20 @@ body::after {
   font-family: 'Playfair Display', serif;
   font-size: clamp(4rem, 13vw, 12rem);
   font-weight: 900; letter-spacing: 0.06em; line-height: 0.9;
+}
+.hero-logo span {
+  display: inline-block;
   background: linear-gradient(160deg, #fff5e8 0%, var(--gold-bright) 42%, var(--accent) 100%);
   -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
   background-size: 200% 200%; background-position: 0% 0%;
-  animation: logoShimmer 10s 1.5s ease-in-out infinite;
+  opacity: 0;
+  animation: letterDrop 0.7s cubic-bezier(0.22,1,0.36,1) forwards, logoShimmer 10s ease-in-out infinite;
 }
+.hero-logo span:nth-child(1) { animation-delay: 0.28s, 1.5s; }
+.hero-logo span:nth-child(2) { animation-delay: 0.40s, 1.5s; }
+.hero-logo span:nth-child(3) { animation-delay: 0.52s, 1.5s; }
+.hero-logo span:nth-child(4) { animation-delay: 0.64s, 1.5s; }
+@keyframes letterDrop { from{opacity:0;transform:translateY(-45px) scale(1.2);filter:blur(12px);} to{opacity:1;transform:translateY(0) scale(1);filter:blur(0);} }
 @keyframes logoShimmer { 0%,100%{background-position:0% 0%;} 50%{background-position:100% 100%;} }
 
 .hero-arabic-sub {
@@ -472,11 +481,17 @@ body::after {
   background: linear-gradient(135deg, var(--accent2), var(--accent));
   color: #fff; text-decoration: none; border-radius: 50px;
   font-weight: 700; font-size: 0.78rem; letter-spacing: 0.08em; text-transform: uppercase;
-  transition: all 0.4s cubic-bezier(0.25,0.46,0.45,0.94);
+  transition: transform 0.4s cubic-bezier(0.25,0.46,0.45,0.94), box-shadow 0.4s;
   box-shadow: 0 4px 40px rgba(200,121,58,0.32);
-  border: none;
+  border: none; position: relative;
+  animation: ctaGlow 4s 2s ease-in-out infinite;
 }
-.btn:hover { transform: translateY(-4px); box-shadow: 0 16px 60px rgba(200,121,58,0.55); }
+@keyframes ctaGlow { 0%,100%{box-shadow:0 4px 40px rgba(200,121,58,0.32);} 50%{box-shadow:0 4px 40px rgba(200,121,58,0.5),0 0 70px rgba(200,121,58,0.18);} }
+.btn:hover { transform: translateY(-4px); box-shadow: 0 16px 60px rgba(200,121,58,0.6) !important; animation: none; }
+
+/* ── HERO SPOTLIGHT ── */
+.hero { --sx:50%;--sy:50%; }
+.hero::before { content:''; position:absolute; inset:0; pointer-events:none; z-index:0; background:radial-gradient(700px circle at var(--sx) var(--sy), rgba(200,121,58,0.055) 0%, transparent 50%); transition:background 0.05s; }
 .btn-outline {
   background: transparent;
   border: 1px solid rgba(201,162,74,0.28);
@@ -645,8 +660,8 @@ body::after {
   transition: opacity 0.5s;
 }
 .producer-card:hover .card-img-wrap::after { opacity: 0.3; }
-.producer-card-img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(30%) brightness(0.82) contrast(1.12); transition: filter 0.6s, transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94); }
-.producer-card:hover .producer-card-img { filter: grayscale(0%) brightness(1.05) contrast(1.08); transform: scale(1.08); }
+.producer-card-img { width: 100%; height: 100%; object-fit: cover; display: block; filter: grayscale(30%) brightness(0.82) contrast(1.12); transition: filter 0.6s, transform 0.5s cubic-bezier(0.25,0.46,0.45,0.94); }
+.producer-card:hover .producer-card-img { filter: grayscale(0%) brightness(1.05) contrast(1.08); /* transform handled by JS for parallax */ }
 
 .card-number {
   position: absolute; top: 0.9rem; left: 0.9rem;
@@ -1481,7 +1496,7 @@ footer span { color: var(--gold); }
       <div class="hero-logo-orn-diamond"></div>
       <div class="hero-logo-orn-line r"></div>
     </div>
-    <h1 class="hero-logo">GYRO</h1>
+    <h1 class="hero-logo"><span>G</span><span>Y</span><span>R</span><span>O</span></h1>
     <div class="hero-logo-tag">music</div>
   </div>
   <p class="hero-slogan">Independent Producers. World Stage.</p>
@@ -3713,7 +3728,7 @@ function cardPlayBeat(btn, producerId) {
 // WOW FX
 // ══════════════════════════════════════
 
-// 1 ── 3D Card Tilt + Shine
+// 1 ── 3D Card Tilt + Shine + Image Parallax
 function initCardTilt(){
   document.querySelectorAll('.producer-card').forEach(card=>{
     if(!card.querySelector('.card-shine')){
@@ -3726,16 +3741,32 @@ function initCardTilt(){
       card.style.transform=`perspective(900px) rotateX(${-y*15}deg) rotateY(${x*15}deg) translateY(-12px) scale(1.025)`;
       const sh=card.querySelector('.card-shine');
       if(sh){sh.style.opacity='1';sh.style.background=`radial-gradient(circle at ${(x+.5)*100}% ${(y+.5)*100}%, rgba(255,255,255,0.13) 0%, transparent 62%)`;}
+      // Image parallax — moves opposite to tilt for depth
+      const img=card.querySelector('.producer-card-img');
+      if(img){img.style.transition='filter 0.15s,transform 0.1s';img.style.transform=`scale(1.1) translate(${-x*12}px,${-y*12}px)`;}
     });
     card.addEventListener('mouseleave',()=>{
       card.style.transition='transform 0.75s cubic-bezier(0.25,0.46,0.45,0.94), box-shadow 0.45s, border-color 0.45s';
       card.style.transform='';
       const sh=card.querySelector('.card-shine'); if(sh) sh.style.opacity='0';
+      const img=card.querySelector('.producer-card-img');
+      if(img){img.style.transition='filter 0.6s,transform 0.7s cubic-bezier(0.25,0.46,0.45,0.94)';img.style.transform='';}
       setTimeout(()=>{card.style.transition='';},750);
     });
   });
 }
 initCardTilt();
+
+// Hero spotlight follows cursor
+(function(){
+  const hero=document.querySelector('.hero');
+  if(!hero) return;
+  hero.addEventListener('mousemove',e=>{
+    const r=hero.getBoundingClientRect();
+    hero.style.setProperty('--sx',(e.clientX-r.left)+'px');
+    hero.style.setProperty('--sy',(e.clientY-r.top)+'px');
+  });
+})();
 
 // 2 ── Text Scramble on section eyebrows
 const SC='ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789#@$&';
